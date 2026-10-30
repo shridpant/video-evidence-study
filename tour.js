@@ -11,13 +11,13 @@ export function setupTour({ video, seek }) {
     {
       target: ".filmstrip",
       title: "2: Inspect a frame",
-      text: "Drag this lower slider. It moves one frame at a time; the number above identifies the displayed frame. You can also hold −1 / +1.",
+      text: "Drag this lower slider. It moves one frame at a time; the number above identifies the displayed frame. You can also hold -1 / +1.",
       event: "frame",
     },
     {
       target: ".aiOutput",
-      title: "3: Read the AI alert",
-      text: "The bell identifies AI information, not a confirmed threat. 1 means a window was flagged; 0 means it was not. Scroll the explanation and expand its sampled evidence if useful. Later clips add importance maps from another classifier and object boxes; neither proves an anomaly. AI can be wrong.",
+      title: "3: Read the AI explanation",
+      text: "Output: 1 and its red heading mean the window was flagged. Without that heading, read the exact output in the explanation; AI can still miss an event. Scroll the explanation and expand its sampled evidence if useful. Later clips add importance maps from another classifier and object boxes; neither proves an anomaly. AI can be wrong.",
       next: "Understood",
     },
     {

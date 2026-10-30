@@ -43,3 +43,5 @@ Run `python3 -m http.server 8765 --directory site` from the parent workspace, th
 The interface applies progressive disclosure and temporal context recommendations from Rastogi et al., _Too Much to Trust?_ (arXiv:2503.02065v2, sections 7–8). This is design rationale, not evidence that this interface improves trust or decision accuracy. Existing effort/usefulness questions remain distinct from correctness; the effort item is not NASA-TLX.
 
 The RIT footer is the unchanged official RGB asset from the RIT Brand Portal's `rit-only-orange-04302019.zip`. AI4Sec branding is retained. The bell is a simple local SVG identifying AI information.
+
+Display update: light background by default; the top theme icon toggles dark mode and stores only that preference locally. All footage panes toggle synchronized playback on click or keyboard. Alert heading appears only for label 1; full model text is unchanged. Guide links open separate practice tabs. Form-return control appears only for fresh tabs referred from Google Docs; direct visits instruct switching to the existing form tab. Authored UI and copied ranges use ASCII hyphens.

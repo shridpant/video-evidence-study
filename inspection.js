@@ -11,7 +11,7 @@ export function windowFrames(w, fps = 30) {
 export function rangeText(ranges) {
   return [...ranges]
     .sort((a, b) => a[0] - b[0])
-    .map(([a, b]) => `${a}–${b}`)
+    .map(([a, b]) => `${a}-${b}`)
     .join("; ");
 }
 function refresh() {
@@ -40,7 +40,7 @@ function refresh() {
   $("#intervals").innerHTML = intervals
     .map(
       ([a, b], i) =>
-        `<div class="interval"><label>Start <input aria-label="Interval ${i + 1} start" data-index="${i}" data-end="0" type="number" min="1" max="${context.clip.frame_count}" value="${a}"></label><span>–</span><label>End <input aria-label="Interval ${i + 1} end" data-index="${i}" data-end="1" type="number" min="1" max="${context.clip.frame_count}" value="${b}"></label><button data-remove="${i}" aria-label="Remove interval ${i + 1}">×</button></div>`,
+        `<div class="interval"><label>Start <input aria-label="Interval ${i + 1} start" data-index="${i}" data-end="0" type="number" min="1" max="${context.clip.frame_count}" value="${a}"></label><span>-</span><label>End <input aria-label="Interval ${i + 1} end" data-index="${i}" data-end="1" type="number" min="1" max="${context.clip.frame_count}" value="${b}"></label><button data-remove="${i}" aria-label="Remove interval ${i + 1}">×</button></div>`,
     )
     .join("");
   $("#intervals")

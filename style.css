@@ -916,3 +916,122 @@ footer #tourStart {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Stable controls and participant-selectable light/dark presentation. */
+:root {
+  background: #fff;
+  --surface: #fff;
+  --button: #edf3ee;
+  --ink: #29372f;
+  --muted-ink: #5d685e;
+}
+.headerActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#theme {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 22px;
+}
+#play {
+  width: 82px;
+  min-width: 82px;
+  height: 36px;
+}
+button {
+  min-height: 32px;
+}
+#return {
+  width: 190px;
+  height: 36px;
+}
+.formReminder {
+  color: var(--muted-ink);
+  font-size: 12px;
+}
+#alertStatus {
+  visibility: hidden;
+  height: 51px;
+}
+#alertStatus small {
+  color: var(--muted-ink);
+}
+.guideLink {
+  color: var(--ink);
+  font-size: 13px;
+  text-underline-offset: 3px;
+}
+canvas[role="button"] {
+  cursor: pointer;
+}
+button:not(.markRail):not(#answer):not(.quiet) {
+  background-color: var(--button);
+  color: var(--ink);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  background: #17251d;
+  color: #e8eee8;
+  --ink: #e8eee8;
+  --muted-ink: #bac7bb;
+  --surface: #223429;
+  --button: #304b39;
+  --line: #506254;
+  --soft: #223429;
+  --red: #ff9993;
+}
+[data-theme="dark"] .aiOutput,
+[data-theme="dark"] .raw,
+[data-theme="dark"] .firstView,
+[data-theme="dark"] .help,
+[data-theme="dark"] .controls,
+[data-theme="dark"] .tourCard,
+[data-theme="dark"] .choices button,
+[data-theme="dark"] .interval,
+[data-theme="dark"] input:not([type="range"]),
+[data-theme="dark"] .samples button,
+[data-theme="dark"] .markRail {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+[data-theme="dark"] .picture {
+  background: #1b2c21;
+}
+[data-theme="dark"] .windowStrip::before {
+  background: #17251d88;
+}
+[data-theme="dark"] #answer,
+[data-theme="dark"] .verdict.anomaly {
+  color: #ff9993;
+}
+[data-theme="dark"] .caption,
+[data-theme="dark"] .muted,
+[data-theme="dark"] .trackLabel span,
+[data-theme="dark"] .intro span,
+[data-theme="dark"] footer small,
+[data-theme="dark"] .eyebrow,
+[data-theme="dark"] #copyStatus,
+[data-theme="dark"] #selectionHint {
+  color: var(--muted-ink);
+}
+@media (max-width: 650px) {
+  .headerActions {
+    gap: 6px;
+  }
+  #return {
+    width: 138px;
+    font-size: 12px;
+  }
+  .formReminder {
+    max-width: 120px;
+  }
+}
+
+[data-theme="dark"] .help summary,
+[data-theme="dark"] #time,
+[data-theme="dark"] #reset { color: var(--muted-ink); }

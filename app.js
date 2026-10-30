@@ -1,4 +1,5 @@
 import { setupInspection, updateInspection } from "./inspection.js";
+import { setupAppearance } from "./appearance.js";
 import { setupTour } from "./tour.js";
 import { windowIndexAtFrame, nextWindowFrame } from "./timeline.js";
 const $ = (s) => document.querySelector(s),
@@ -29,6 +30,9 @@ let c,
   cache = new Map(),
   lastTextWindow = -1;
 const after = q.get("phase") === "after";
+const fromForm =
+  document.referrer.startsWith("https://docs.google.com/") &&
+  history.length === 1;
 async function json(path) {
   const r = await fetch(path);
   if (!r.ok) throw Error("Could not load " + path);
@@ -43,7 +47,7 @@ function directory() {
   app.innerHTML = `<main class="directory"><img class="labLogo" src="ai4sec.png" alt="AI4Sec lab"><h1>Camera review</h1><p>Open your assigned clip using the link in the Google Form.</p><p>Keep the Form tab open to record your answers.</p></main>`;
 }
 function pane(id, title, caption) {
-  return `<section class="pane ${id === "original" ? "activePane" : ""}" id="${id}Pane"><h2>${title}</h2><div class="picture">${id === "original" ? `<video id="video" src="${c.id}.mp4" playsinline muted preload="auto" tabindex="0" role="button" aria-label="Play or pause original video"></video>` : `<canvas id="${id}Canvas" aria-label="${title} on the current video frame"></canvas>`}</div><span class="stamp">Frame 001 / 750</span><div class="caption" id="${id}Caption">${caption}</div></section>`;
+  return `<section class="pane ${id === "original" ? "activePane" : ""}" id="${id}Pane"><h2>${title}</h2><div class="picture">${id === "original" ? `<video id="video" src="${c.id}.mp4" playsinline muted preload="auto" tabindex="0" role="button" aria-label="Play or pause original video"></video>` : `<canvas id="${id}Canvas" tabindex="0" role="button" aria-label="Play or pause ${title.toLowerCase()}"></canvas>`}</div><span class="stamp">Frame 001 / 750</span><div class="caption" id="${id}Caption">${caption}</div></section>`;
 }
 function render() {
   const number = Number(c.id.slice(1));
@@ -51,17 +55,17 @@ function render() {
   const definition =
     "An anomalous event is visible activity that indicates harm, a dangerous incident, or damage to or taking of property. Unusual appearance, a crowd, or fast movement alone does not count. Judge visible actions, not assumed intent; choose Cannot determine when unclear.";
   app.innerHTML = `<div class="shell ${after ? "" : "before"}" data-layout="${layout}">
-    <header><img class="labLogo" src="ai4sec.png" alt="AI4Sec lab"><div><strong>Video Evidence Study</strong></div><button class="right" id="return">Return to Google Form</button></header>
-    <section class="answerBar"><div><span class="eyebrow">${after ? "After AI" : "Before AI"} — Your anomalous frames</span><button id="answer" disabled></button><small id="copyStatus" role="status"></small></div><details class="help"><summary title="${esc(definition)}">What counts as an anomaly?</summary><p>${definition}</p></details></section>
+    <header><img class="labLogo" src="ai4sec.png" alt="AI4Sec lab"><div><strong>Video Evidence Study</strong></div><div class="headerActions"><button id="theme" title="Switch to dark theme" aria-label="Switch to dark theme">☾</button>${fromForm ? '<button id="return">Return to Google Form</button>' : '<span class="formReminder">Answer in your Google Form tab</span>'}</div></header>
+    <section class="answerBar"><div><span class="eyebrow">${after ? "After AI" : "Before AI"} - Your anomalous frames</span><button id="answer" disabled></button><small id="copyStatus" role="status"></small></div><details class="help"><summary title="${esc(definition)}">What counts as an anomaly?</summary><p>${definition}</p></details></section>
     <div class="intro"><h1>${title}</h1><span>${c.practice ? "Try marking, editing and copying a range. Practice is not scored." : "Review the scene. Mark any anomalous intervals, then return to your Form."}</span></div>
     <main class="workspace"><section class="mediaArea"><div class="toolbar">${after && (maps || boxes) ? `<div class="tabs">${["original", ...(maps ? ["map"] : []), ...(boxes ? ["boxes"] : [])].map((k) => `<button data-view="${k}">${{ original: "Original", map: "Importance map", boxes: "Boxes" }[k]}</button>`).join("")}<button data-view="compare" class="active">Side by side</button></div>` : ""}</div>
     <div class="reviewStage"><button id="mark" class="markRail" aria-label="Start marking"><span aria-hidden="true">[</span>Start<br>mark</button><div class="panes">${pane("original", "Original footage", "Click video to play / pause")}${maps ? pane("map", "Estimated importance map", "") : ""}${boxes ? pane("boxes", "Object boxes", "") : ""}</div><button id="finish" class="markRail" aria-label="Finish interval" disabled><span aria-hidden="true">]</span>Finish<br>mark</button></div>
     <section class="marking"><div class="annotationBar"><span id="selectionHint">Mark an interval, or choose:</span><div class="choices" role="group" aria-label="Assessment without a frame interval"><button data-mode="NONE" aria-pressed="false">No anomaly</button><button data-mode="UNSURE" aria-pressed="false">Cannot determine</button><button data-mode="SKIP" aria-pressed="false">Skip clip</button></div><button id="cancelMark" hidden>Cancel mark</button><button id="clear" class="quiet">Reset</button></div><div id="intervals"></div><span id="markStatus" role="status"></span></section></section>
-    <aside class="aside">${after ? `<section class="aiOutput" aria-label="AI security alert"><h2><img src="ai-alert.svg" class="alertIcon" alt="">AI security alert</h2><div id="verdict" class="verdict"></div><div id="windowLabel" class="muted"></div><pre id="raw" class="raw" tabindex="0" aria-label="Exact AI explanation"></pre><details class="sourceDetails"><summary>Evidence used for this alert (8 frames)</summary><div class="samples" id="samples"></div></details><details class="sourceDetails"><summary>How to read this alert</summary><p>The AI assesses overlapping 10-second windows, using eight sampled frames from each. A 1 flags the whole window; it does not mean every frame is anomalous. A 0 does not rule out a missed event.</p><p>The full research system can refine window scores into frame-level scores through postprocessing. That postprocessing is not shown here: this pane displays the original window judgment and exact explanation. The selected window follows the nearest window center during playback or slider navigation. Clicking an evidence frame keeps its alert selected. Window boundaries come from the saved model output and may not begin at the clip start.</p></details></section>` : '<div class="firstView"><h2>Your first assessment</h2><p>Review the visible activity. AI evidence appears at the next stage of the Form.</p></div>'}</aside></main>
-    <section class="timeline"><div class="timelineTop"><strong id="frame">Frame 1 / 750</strong><div class="dockArea"><div class="controls"><button id="dragHandle" aria-label="Move playback controls">⠿</button><button id="play" class="primary">Play</button><button id="previous" title="Hold to step continuously">−1 frame</button><button id="next" title="Hold to step continuously">+1 frame</button><label for="jump">Frame</label><input id="jump" type="number" min="1" max="750" value="1"><button id="go">Go</button></div></div></div>
-    ${after ? `<div class="trackLabel"><label for="window"><img class="alertIcon" src="ai-alert.svg" alt="">AI review windows (10 seconds each)</label><span>Green outline: selected window. Red dots: flagged window centers.</span></div><div class="windowStrip timeTrack" style="background-image:url('${c.id}-filmstrip.jpg')"><div class="windowTiles">${records.map((w, i) => `<span class="windowTile ${w.label === 1 ? "aiAnomaly" : ""}" style="left:${(100 * Math.round(w.time * c.fps)) / (c.frame_count - 1)}%" title="Window ${i + 1}: output ${w.label ?? "unavailable"}"></span>`).join("")}</div><span id="activeWindow"></span><span id="alertPointer" aria-hidden="true">▼</span><input id="window" aria-label="AI review window, 10 seconds" type="range" min="1" max="750" step="1" value="1"></div>` : ""}
+    <aside class="aside">${after ? `<section class="aiOutput" aria-label="AI explanation"><h2>AI explanation</h2><div id="alertStatus"><div id="verdict" class="verdict anomaly">Output: 1</div><small>Anomaly flagged</small></div><div id="windowLabel" class="muted"></div><pre id="raw" class="raw" tabindex="0" aria-label="Exact AI explanation"></pre><details class="sourceDetails"><summary>Evidence used for this output (8 frames)</summary><div class="samples" id="samples"></div></details><details class="sourceDetails"><summary>How to read this output</summary><p>The AI assesses overlapping 10-second windows, using eight sampled frames from each. A 1 flags the whole window; it does not mean every frame is anomalous. A 0 does not rule out a missed event.</p><p>The full research system can refine window scores into frame-level scores through postprocessing. That postprocessing is not shown here: this pane displays the original window judgment and exact explanation. The selected window follows the nearest window center during playback or slider navigation. Clicking an evidence frame keeps its alert selected. Window boundaries come from the saved model output and may not begin at the clip start.</p></details></section>` : '<div class="firstView"><h2>Your first assessment</h2><p>Review the visible activity. AI evidence appears at the next stage of the Form.</p></div>'}</aside></main>
+    <section class="timeline"><div class="timelineTop"><strong id="frame">Frame 1 / 750</strong><div class="dockArea"><div class="controls"><button id="dragHandle" aria-label="Move playback controls">⠿</button><button id="play" class="primary">Play</button><button id="previous" title="Hold to step continuously">-1 frame</button><button id="next" title="Hold to step continuously">+1 frame</button><label for="jump">Frame</label><input id="jump" type="number" min="1" max="750" value="1"><button id="go">Go</button></div></div></div>
+    ${after ? `<div class="trackLabel"><label for="window"><img class="alertIcon" src="ai-alert.svg" alt="">AI review windows (10 seconds each)</label><span>Green outline: selected window. Red dots: centers of 10-second windows flagged by AI, not event boundaries.</span></div><div class="windowStrip timeTrack" style="background-image:url('${c.id}-filmstrip.jpg')"><div class="windowTiles">${records.map((w, i) => `<span class="windowTile ${w.label === 1 ? "aiAnomaly" : ""}" style="left:${(100 * Math.round(w.time * c.fps)) / (c.frame_count - 1)}%" title="Window ${i + 1}: output ${w.label ?? "unavailable"}"></span>`).join("")}</div><span id="activeWindow"></span><span id="alertPointer" aria-hidden="true">▼</span><input id="window" aria-label="AI review window, 10 seconds" type="range" min="1" max="750" step="1" value="1"></div>` : ""}
     <div class="trackLabel"><label for="slider">Video frames</label><span>Red bands = your marked intervals</span><small id="time"></small></div><div class="filmstrip" style="background-image:url('${c.id}-filmstrip.jpg')"><div id="humanBands"></div><span id="frameCursor"></span><input id="slider" aria-label="Video frame" type="range" min="1" max="750" step="1" value="1"></div>
-    </section><footer><div>${c.practice && after ? '<button id="tourStart" class="quiet">Restart guided practice</button>' : ""}</div><img src="rit.svg" alt="RIT" class="ritLogo"><small>Created with help from Codex</small></footer></div>`;
+    </section><footer><div>${c.practice && after ? '<button id="tourStart" class="quiet">Restart guided practice</button>' : '<a class="guideLink" href="P01.html?phase=after" target="_blank" rel="noopener">Open guided practice</a>'}</div><img src="rit.svg" alt="RIT" class="ritLogo"><small>Created with help from Codex</small></footer></div>`;
   video = $("#video");
   video.onloadeddata = () => seekFrame(1);
   video.onseeked = draw;
@@ -102,12 +106,19 @@ function render() {
   $("#jump").onkeydown = (e) => {
     if (e.key === "Enter") $("#go").click();
   };
-  $("#return").onclick = () => {
-    window.close();
-    $("#return").textContent = "Switch to your Google Form tab";
-    $("#return").title =
-      "If this tab stays open, switch to the existing Google Form tab. Do not reopen the form from its beginning.";
-  };
+  setupAppearance();
+  if (fromForm) $("#return").onclick = () => window.close();
+  for (const canvas of document.querySelectorAll("canvas")) {
+    const toggle = () =>
+      video.paused ? video.play().catch(() => {}) : video.pause();
+    canvas.onclick = toggle;
+    canvas.onkeydown = (event) => {
+      if (["Enter", " "].includes(event.key)) {
+        event.preventDefault();
+        toggle();
+      }
+    };
+  }
   if (after) {
     $("#window").oninput = (event) => {
       const target = +event.target.value;
@@ -213,7 +224,7 @@ function draw() {
   $("#slider").value = n;
   $("#slider").setAttribute("aria-valuetext", `Frame ${n} of ${c.frame_count}`);
   if (document.activeElement !== $("#jump")) $("#jump").value = n;
-  $("#time").textContent = `${((n - 1) / 30).toFixed(2)} / 25.00 s — 30 fps`;
+  $("#time").textContent = `${((n - 1) / 30).toFixed(2)} / 25.00 s - 30 fps`;
   document.querySelectorAll(".stamp").forEach((x) => (x.textContent = stamp));
   if (!after) {
     updateInspection(n, null);
@@ -232,16 +243,14 @@ function draw() {
   const band = $("#activeWindow");
   band.style.left = `${(100 * w.start) / c.duration}%`;
   band.style.width = `${(100 * (w.end - w.start)) / c.duration}%`;
-  $("#verdict").classList.toggle("anomaly", w.label === 1);
-  $("#verdict").textContent =
-    `AI output ${w.label ?? "—"} — ${w.label === 1 ? "anomaly flagged" : w.label === 0 ? "no anomaly flagged" : "unavailable"}`;
+  $("#alertStatus").style.visibility = w.label === 1 ? "visible" : "hidden";
   if (lastTextWindow !== selectedWindow) {
     lastTextWindow = selectedWindow;
     $("#raw").textContent = w.raw;
     $("#raw").scrollTop = 0;
   }
   $("#windowLabel").textContent =
-    `Frames ${Math.round(w.start * 30) + 1}–${Math.round(w.end * 30)} — 10-second window`;
+    `Frames ${Math.round(w.start * 30) + 1}-${Math.round(w.end * 30)} - 10-second window`;
   document
     .querySelectorAll(".windowTile")
     .forEach((tile, i) =>
@@ -301,7 +310,7 @@ function draw() {
       ctx.drawImage(im, 0, 0, ctx.canvas.width, ctx.canvas.height);
     }
     $("#mapCaption").textContent =
-      `Separate classifier — ${mw.predicted_class} — map sampled at frame ${sample.frame + 1}`;
+      `Separate classifier - ${mw.predicted_class} - map sampled at frame ${sample.frame + 1}`;
   }
   if (boxes) {
     const b = boxes.frames[n - 1],
@@ -325,7 +334,7 @@ function draw() {
       }
     }
     $("#boxesCaption").textContent =
-      `${b.detections.length} detected object${b.detections.length === 1 ? "" : "s"} — not verified anomaly locations`;
+      `${b.detections.length} detected object${b.detections.length === 1 ? "" : "s"} - not verified anomaly locations`;
   }
 }
 (async () => {
