@@ -482,7 +482,7 @@ small {
   }
 }
 :root {
-  background: #f5f1e8;
+  background: #eef2ed;
   color: #29372f;
   --line: #ded9ce;
   --soft: #faf4e9;
@@ -704,7 +704,7 @@ header small {
   content: "";
   position: absolute;
   inset: 0;
-  background: #f5f1e8aa;
+  background: #eef2edaa;
   border-radius: 6px;
 }
 .windowTiles {
@@ -715,41 +715,33 @@ header small {
 }
 .windowTile {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 3px;
+  top: 3px;
+  width: 5px;
+  height: 5px;
   transform: translateX(-50%);
-  opacity: 0.5;
   border: 0;
-  background: #8e8b7c;
+  border-radius: 50%;
+  background: transparent;
 }
 .windowTile.aiAnomaly {
   background: #ae3735;
-  border: 0;
 }
 .windowTile.selected {
-  opacity: 1;
   outline: 0;
-  background: #312e27;
-  width: 4px;
 }
 #activeWindow {
   position: absolute;
   top: 1px;
   bottom: 1px;
-  border: 2px solid #8d6c3b;
-  background: #e9c38122;
+  border: 2px solid #42664f;
+  background: #42664f12;
   border-radius: 5px;
   pointer-events: none;
-}
-#activeWindow.anomaly {
-  border-color: #ad3434;
-  background: #b33d351a;
 }
 #alertPointer {
   position: absolute;
   top: -9px;
-  color: #815a32;
+  color: #42664f;
   font-size: 11px;
   transform: translateX(-50%);
   z-index: 4;
@@ -770,8 +762,10 @@ header small {
   margin-top: 8px;
 }
 footer {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
   margin-top: 16px;
   padding: 8px;
 }
@@ -903,4 +897,22 @@ footer {
   width: auto;
   max-width: 100%;
   height: auto;
+}
+
+footer > small {
+  justify-self: end;
+  color: #667367;
+  font-size: 11px;
+}
+#return {
+  border-color: #b4c4b5;
+  background: #f7faf5;
+  color: #324d3a;
+  border-radius: 20px;
+  font-size: 14px;
+}
+footer #tourStart {
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

@@ -27,7 +27,7 @@ function refresh() {
   $("#answer").disabled = !answer || pending !== null;
   $("#copyStatus").textContent =
     pending !== null
-      ? `Recording from frame ${pending} · move to the end, then finish`
+      ? `Recording from frame ${pending}: move to the end, then finish`
       : "Click the red answer to copy into Google Forms";
   $("#mark").disabled = pending !== null;
   $("#finish").disabled = pending === null;

@@ -7,7 +7,7 @@ Small static study viewer hosted on GitHub Pages. No framework, analytics, respo
 - `app.js`: loads the assigned clip/evidence, synchronizes views and navigates frames/windows.
 - `inspection.js`: temporary multi-interval annotations, endpoint editing, copy, held stepping and movable controls.
 - `timeline.js`: shared frame coordinates and window-step navigation.
-- `tour.js`: action-led spotlight walkthrough, loaded for separate practice only.
+- `tour.js`: action-led spotlight walkthrough, runs on separate practice only.
 - `style.css`: responsive white/warm RIT-accented presentation.
 - `C01.html`–`C06.html`: individual study entries. `P01.html`: separate practice.
 - `study.json`: clip metadata. MP4/JSON/image files: genuine footage and computed evidence.
@@ -20,7 +20,7 @@ All clips contain 750 frames at 30 fps. Frame labels are inclusive, clip-relativ
 
 Start on the left margin → move to an end frame → Finish on the right margin. Finish is disabled until Start is pressed. Repeat for separate intervals; edit endpoints or remove individual intervals. The margins do not toggle video playback. Red bands indicate human markings. The top red answer copies only ranges (`128–175; 240–290`) or NONE/UNSURE/SKIP. No subjective AI agreement is copied or asked. Draft marks stay in memory and disappear on reload/closing; copy before returning to the Form.
 
-Both full-width tracks use the same 1–750 frame coordinates and always follow playback. The upper track snaps pointer/keyboard navigation to actual 10-second window centers; its thumb still follows the current frame during playback and frame stepping. Home/End reach clip boundaries. Red ticks mark positive window centers; the outline spans the selected window, not an exact anomaly interval. The same bell symbol identifies the AI pane and its track. Exact raw model text is retained in a fixed scroll box. Sampled evidence and the frame-score caveat are expandable. Clicking an input thumbnail seeks its frame and selects the corresponding nearest window; there is no hidden pinned-output mode.
+Both full-width tracks use the same 1–750 frame coordinates and always follow playback. The upper track drags continuously; arrow keys jump to actual 10-second window centers; its thumb still follows the current frame during playback and frame stepping. Home/End reach clip boundaries. Red dots mark positive window centers; the outline spans the selected window, not an exact anomaly interval. The same bell symbol identifies the AI pane and its track. Clicking a sampled evidence frame retains its alert until playback or ordinary navigation resumes. The green outline marks the selected window independently of its label. Exact raw model text is retained in a fixed scroll box. Sampled evidence and the frame-score caveat are expandable. Clicking an input thumbnail seeks its frame and selects the corresponding nearest window; there is no hidden pinned-output mode.
 
 `P01.html?phase=after` starts a practice-only, eight-step spotlight guide. It advances through play, frame scrubbing, understanding the alert, window navigation, Start, Finish, and copying. It can be skipped, replayed or dismissed with Escape. Reduced-motion preferences disable transitions. Practice interactions are temporary and never sent or scored.
 
