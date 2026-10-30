@@ -1,8 +1,4 @@
-import {
-  setupInspection,
-  updateInspection,
-  inspectionNotes,
-} from "./inspection.js";
+import { setupInspection, updateInspection } from "./inspection.js";
 ("use strict");
 const $ = (s) => document.querySelector(s),
   app = $("#app"),
@@ -53,10 +49,25 @@ function pane(id, title, caption) {
 }
 function render() {
   const number = Number(c.id.slice(1));
-  app.innerHTML = `<div class="shell ${after ? "" : "before"}" data-layout="${layout}"><header><img class="labLogo" src="ai4sec.png" alt="AI4Sec lab"><span class="headerTitle">Camera review / Clip ${number}</span><span class="pill">${after ? "AI review" : "Original only"}</span><button class="right" id="return">Return to Google Form</button></header><div class="notice">${after ? "Inspect the same frame across views. AI can be wrong. Answer the questions in your Google Form tab." : "Watch the original clip, then return to Google Forms for your initial judgment. No AI is shown on this page."}</div><main class="workspace"><section class="mediaArea"><div class="toolbar"><h1>Clip ${String(number).padStart(2, "0")} · Does this scene need attention?</h1>${after && (maps || boxes) ? `<div class="tabs">${["original", ...(maps ? ["map"] : []), ...(boxes ? ["boxes"] : [])].map((k) => `<button data-view="${k}" class="${layout === "focus" && k === "original" ? "active" : ""}">${{ original: "Original", map: "Map", boxes: "Boxes" }[k]}</button>`).join("")}<button data-view="compare" class="${layout === "compare" ? "active" : ""}">Compare</button></div>` : ""}</div><div class="panes">${pane("original", "Original footage", "Silent · original speed · no AI overlay")}${maps ? pane("map", "Estimated importance map", "Loading computed classifier map…") : ""}${boxes ? pane("boxes", "Proposed object boxes", "Loading computed detections…") : ""}</div></section>${after ? `<aside class="aside"><div class="asideHead"><h2>VERA window output</h2><div class="muted">Exact VLM text · not a per-frame prediction</div><label for="window">Window, in clip frames</label><br><select id="window">${records.map((w, i) => `<option value="${i}">${Math.round(w.start * 30) + 1}–${Math.round(w.end * 30)}</option>`).join("")}</select> <label class="muted"><input id="follow" type="checkbox" checked> Follow frame</label></div><div class="output"><div class="verdict" id="verdict"></div><pre class="raw" id="raw"></pre><div class="textPages"><button id="textPrev" aria-label="Previous text page">←</button><span id="textPageLabel"></span><button id="textNext" aria-label="Next text page">→</button></div></div><div class="sampleArea"><div class="muted">Eight input frames used by this output</div><div class="samples" id="samples"></div></div><div class="audit"><span id="windowAudit"></span><br>0 = no anomaly · 1 = anomaly<br><button id="audit">Download inspection record</button></div></aside>` : `<aside class="aside"><div class="asideHead"><h2>First viewing</h2><div class="muted">Make your own judgment before seeing AI.</div></div><div class="empty"><p>Watch at normal speed. Replay or inspect individual frames if needed.</p><p>Judge only visible unusual or potentially harmful events; do not infer intent.</p><p>Return to the Google Form tab to answer. “Cannot determine” is valid.</p><p class="muted">No AI evidence is loaded on this page.</p></div><div class="audit">Clip integrity: <span class="mono">${c.sha256.slice(0, 12)}</span></div></aside>`}</main><section class="timeline"><div class="timelineTop"><div class="frameReadout" id="frame">Frame 001 / 750</div><div class="controls"><button id="play" class="primary">Play</button><button id="previous" aria-label="Previous frame">−1 frame</button><button id="next" aria-label="Next frame">+1 frame</button><label for="jump">Go to frame</label><input id="jump" type="number" min="1" max="750" value="1"><button id="go">Go</button></div></div><input class="range" id="slider" aria-label="Video frame" type="range" min="1" max="750" step="1" value="1"><div class="timelineBottom"><span>One slider step = one source-video frame · arrow keys move one frame</span><span id="time">0.00 / 25.00 s · 30 fps</span></div></section></div>`;
+  const title = c.practice
+    ? "Practice · camera review"
+    : `Clip ${number} · camera review`;
+  const definition =
+    "An anomalous event is visible activity that indicates harm, a dangerous incident, or damage to or taking of property. Unusual appearance, a crowd, or fast movement alone does not count. Judge visible actions, not assumed intent; choose Cannot determine when unclear.";
+  app.innerHTML = `<div class="shell ${after ? "" : "before"}" data-layout="${layout}">
+    <header><img class="labLogo" src="ai4sec.png" alt="AI4Sec lab"><div><strong>Rochester Institute of Technology</strong><small>AI4Sec · Video evidence study</small></div><button class="right" id="return">Back to Google Form ↗</button></header>
+    <section class="answerBar"><div><span class="eyebrow">${after ? "After AI" : "Before AI"} · Your anomalous frames</span><button id="answer" disabled></button><small id="copyStatus" role="status"></small></div><details class="help"><summary title="${esc(definition)}">What counts as an anomaly?</summary><p>${definition}</p></details></section>
+    <div class="intro"><h1>${title}</h1><span>${c.practice ? "Try marking, editing and copying a range. Practice is not scored." : "Review the scene. Mark any anomalous intervals, then return to your Form."}</span></div>
+    <main class="workspace"><section class="mediaArea"><div class="toolbar">${after && (maps || boxes) ? `<div class="tabs">${["original", ...(maps ? ["map"] : []), ...(boxes ? ["boxes"] : [])].map((k) => `<button data-view="${k}">${{ original: "Original", map: "Importance map", boxes: "Boxes" }[k]}</button>`).join("")}<button data-view="compare" class="active">Side by side</button></div>` : ""}</div>
+    <div class="panes">${pane("original", "Original footage", "Click video to play / pause")}${maps ? pane("map", "Estimated importance map", "") : ""}${boxes ? pane("boxes", "Object boxes", "") : ""}</div></section>
+    <aside class="aside"><section class="marking"><button id="mark">+ Start marking</button><button id="cancelMark" hidden>Cancel</button><small>Start → move to an end frame → finish. Repeat for another interval.</small><div id="intervals"></div><span id="markStatus" role="status"></span><div class="choices"><button data-mode="NONE">No anomaly</button><button data-mode="UNSURE">Cannot determine</button><button data-mode="SKIP">Skip</button><button id="clear">Clear</button></div></section>
+    ${after ? `<section class="aiOutput"><div id="verdict" class="verdict"></div><div id="windowLabel" class="muted"></div><pre id="raw" class="raw"></pre><div class="textPages"><button id="textPrev" aria-label="Previous explanation page">←</button><span id="textPageLabel"></span><button id="textNext" aria-label="Next explanation page">→</button></div><details><summary>Eight frames VERA saw</summary><div class="samples" id="samples"></div></details></section>` : '<p class="firstView">First, make your own assessment. AI appears only in the next stage of the Form.</p>'}</aside></main>
+    <section class="timeline"><div class="timelineTop"><strong id="frame">Frame 1 / 750</strong><div class="dockArea"><div class="controls"><button id="dragHandle" aria-label="Move playback controls">⠿</button><button id="play" class="primary">Play</button><button id="previous" title="Hold to step continuously">−1 frame</button><button id="next" title="Hold to step continuously">+1 frame</button><label for="jump">Frame</label><input id="jump" type="number" min="1" max="750" value="1"><button id="go">Go</button></div></div></div>
+    ${after ? `<div class="trackLabel"><label for="window">VERA windows</label><span>Red border = AI predicted anomaly · windows overlap</span><label><input id="follow" type="checkbox" checked> Follow frame</label></div><div class="windowStrip"><div class="windowTiles">${records.map((w, i) => `<span class="windowTile ${w.label === 1 ? "aiAnomaly" : ""}" style="background-position:${records.length === 1 ? 0 : (100 * i) / (records.length - 1)}% 0;background-image:url('${c.id}-windows.jpg');background-size:${records.length * 100}% 100%" title="Window ${i + 1}: VERA ${w.label ?? "unavailable"}"></span>`).join("")}</div><input id="window" aria-label="VERA window" type="range" min="0" max="${records.length - 1}" step="1" value="0"></div>` : ""}
+    <div class="trackLabel"><label for="slider">Every frame</label><span>Red bands = your marked intervals</span><small id="time"></small></div><div class="filmstrip" style="background-image:url('${c.id}-filmstrip.jpg')"><div id="humanBands"></div><span id="frameCursor"></span><input id="slider" aria-label="Video frame" type="range" min="1" max="750" step="1" value="1"></div>
+    </section></div>`;
   video = $("#video");
-  video.onloadeddata = () =>
-    seekFrame(after ? Math.round(c.focus * 30) + 1 : 1);
+  video.onloadeddata = () => seekFrame(1);
   video.onseeked = draw;
   video.onplay = () => {
     $("#play").textContent = "Pause";
@@ -76,6 +87,10 @@ function render() {
     video.paused ? video.play().catch(() => {}) : video.pause();
   $("#slider").oninput = (e) => {
     video.pause();
+    if (after) {
+      follow = true;
+      $("#follow").checked = true;
+    }
     seekFrame(+e.target.value);
   };
   $("#previous").onclick = () => {
@@ -108,7 +123,7 @@ function render() {
       textPage++;
       showText();
     };
-    $("#window").onchange = (e) => {
+    $("#window").oninput = (e) => {
       selectedWindow = +e.target.value;
       follow = false;
       $("#follow").checked = false;
@@ -118,7 +133,7 @@ function render() {
       follow = e.target.checked;
       draw();
     };
-    $("#audit").onclick = downloadAudit;
+
     document
       .querySelectorAll("[data-view]")
       .forEach((b) => (b.onclick = () => setView(b.dataset.view)));
@@ -146,7 +161,7 @@ function seekFrame(n) {
   n = Math.max(1, Math.min(750, Math.round(n) || 1));
   video.currentTime = (n - 1) / 30 + 0.0001;
   $("#slider").value = n;
-  $("#jump").value = n;
+  if (document.activeElement !== $("#jump")) $("#jump").value = n;
 }
 function tick() {
   cancelAnimationFrame(playingRAF);
@@ -186,7 +201,7 @@ function draw() {
     stamp = `Frame ${String(n).padStart(3, "0")} / 750`;
   $("#frame").textContent = stamp;
   $("#slider").value = n;
-  $("#jump").value = n;
+  if (document.activeElement !== $("#jump")) $("#jump").value = n;
   $("#time").textContent = `${((n - 1) / 30).toFixed(2)} / 25.00 s · 30 fps`;
   document.querySelectorAll(".stamp").forEach((x) => (x.textContent = stamp));
   if (!after) {
@@ -200,17 +215,25 @@ function draw() {
   $("#window").value = selectedWindow;
   $("#verdict").classList.toggle("anomaly", w.label === 1);
   $("#verdict").textContent =
-    `VERA output: ${w.label} · ${w.label === 1 ? "anomaly indicated" : "no anomaly indicated"}`;
+    `VERA output: ${w.label} · ${w.label === 1 ? "anomaly indicated" : w.label === 0 ? "no anomaly indicated" : "output unavailable"}`;
   if (lastTextWindow !== selectedWindow) {
     lastTextWindow = selectedWindow;
     textPage = 0;
   }
   showText();
-  $("#windowAudit").textContent =
-    `Window center: frame ${Math.round(w.time * 30) + 1} · clip ${c.sha256.slice(0, 12)}`;
+  $("#windowLabel").textContent =
+    `Frames ${Math.round(w.start * 30) + 1}–${Math.round(w.end * 30)} · 10-second window`;
+  document
+    .querySelectorAll(".windowTile")
+    .forEach((tile, i) =>
+      tile.classList.toggle("selected", i === selectedWindow),
+    );
   if ($("#samples").dataset.window !== String(selectedWindow)) {
     $("#samples").innerHTML = w.input_frames
-      .map((n) => `<button data-frame="${n}">${n}</button>`)
+      .map(
+        (n, j) =>
+          `<button data-frame="${n}" title="Inspect frame ${n}"><span class="inputThumb" style="background-image:url('${c.id}-inputs.jpg');background-position:${(100 * j) / 7}% ${records.length === 1 ? 0 : (100 * selectedWindow) / (records.length - 1)}%;background-size:800% ${records.length * 100}%"></span>${n}</button>`,
+      )
       .join("");
     $("#samples").dataset.window = selectedWindow;
     $("#samples")
@@ -261,7 +284,7 @@ function draw() {
       ctx.drawImage(im, 0, 0, ctx.canvas.width, ctx.canvas.height);
     }
     $("#mapCaption").textContent =
-      `X3D-S: ${mw.predicted_class}. Nearest map: frame ${sample.frame + 1}; 32 samples/window. Amber = relative importance, not certainty. Separate from VERA.`;
+      `Separate classifier · ${mw.predicted_class} · map sampled at frame ${sample.frame + 1}`;
   }
   if (boxes) {
     const b = boxes.frames[n - 1],
@@ -285,7 +308,7 @@ function draw() {
       }
     }
     $("#boxesCaption").textContent =
-      `${b.detections.length} proposed region${b.detections.length === 1 ? "" : "s"} on this frame. Grounding DINO object detections; not verified anomaly locations.`;
+      `${b.detections.length} detected object${b.detections.length === 1 ? "" : "s"} · not verified anomaly locations`;
   }
 }
 function textChunks(text, limit = 400) {
@@ -310,37 +333,6 @@ function showText() {
     `Exact text · ${textPage + 1} / ${pages.length}`;
   $("#textPrev").disabled = textPage === 0;
   $("#textNext").disabled = textPage === pages.length - 1;
-}
-function downloadAudit() {
-  const n = frameNumber(),
-    w = records[selectedWindow],
-    payload = {
-      study_version: "forms-led-2026-10-29-player-v2",
-      inspection_notes: inspectionNotes(),
-      clip: c.id,
-      clip_sha256: c.sha256,
-      frame_1based: n,
-      seconds: (n - 1) / 30,
-      vera_window_index: selectedWindow,
-      vera: w,
-      displayed_windows: [...shown],
-      classifier: maps
-        ? {
-            name: maps.classifier,
-            method: maps.method,
-            checkpoint_sha256: maps.checkpoint_sha256,
-            window: nearest(maps.windows, video.currentTime, "center"),
-          }
-        : null,
-      boxes: boxes ? boxes.frames[n - 1] : null,
-    };
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(
-    new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }),
-  );
-  a.download = `${c.id}-frame-${n}-inspection.json`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 (async () => {
   try {

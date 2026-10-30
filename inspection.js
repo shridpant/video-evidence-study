@@ -1,55 +1,98 @@
-// Interaction-only helpers. Answers stay in memory until copied into Google Forms.
-const $ = (selector) => document.querySelector(selector);
-let context;
-let start = null;
-let end = null;
-let agreement = null;
-let preview = false;
-let lastWindow = -1;
-
-export function windowFrames(window, fps = 30) {
-  return [Math.round(window.start * fps) + 1, Math.round(window.end * fps)];
+// Human annotations remain in memory. Only frame ranges are copied to Forms.
+const $ = (s) => document.querySelector(s);
+let context,
+  intervals = [],
+  pending = null,
+  mode = "",
+  currentFrame = 1;
+export function windowFrames(w, fps = 30) {
+  return [Math.round(w.start * fps) + 1, Math.round(w.end * fps)];
 }
-
-export function selectionText(mode, startFrame, endFrame) {
-  if (mode === "none") return "No anomaly observed";
-  if (mode === "uncertain") return "Cannot determine";
-  if (startFrame === null || endFrame === null)
-    return "Mark both interval endpoints";
-  if (startFrame > endFrame) return "Start must be at or before end";
-  return `Anomaly interval: frames ${startFrame}–${endFrame} (inclusive)`;
+export function rangeText(ranges) {
+  return [...ranges]
+    .sort((a, b) => a[0] - b[0])
+    .map(([a, b]) => `${a}–${b}`)
+    .join("; ");
 }
-
-function summary() {
-  const mode = $("#judgment").value;
-  const valid =
-    mode !== "interval" || (start !== null && end !== null && start <= end);
-  const parts = [
-    context.clip.id,
-    context.after ? "After AI" : "Before AI",
-    selectionText(mode, start, end),
-  ];
-  if (agreement) {
-    const [first, last] = windowFrames(agreement.window, context.clip.fps);
-    parts.push(
-      `${agreement.answer} with VERA (${agreement.window.label}), window frames ${first}–${last}`,
+function refresh() {
+  const displayRanges =
+    pending === null
+      ? intervals
+      : [
+          ...intervals,
+          [Math.min(pending, currentFrame), Math.max(pending, currentFrame)],
+        ];
+  const answer = mode || rangeText(displayRanges);
+  $("#answer").textContent = answer || "Your marked frames will appear here";
+  $("#answer").disabled = !answer || pending !== null;
+  $("#copyStatus").textContent =
+    pending !== null
+      ? `Recording from frame ${pending} · move to the end, then finish`
+      : "Click the red answer to copy into Google Forms";
+  $("#mark").textContent =
+    pending === null ? "+ Start marking" : "■ Finish interval";
+  $("#mark").classList.toggle("recording", pending !== null);
+  $("#cancelMark").hidden = pending === null;
+  $("#intervals").innerHTML = intervals
+    .map(
+      ([a, b], i) =>
+        `<div class="interval"><label>Start <input aria-label="Interval ${i + 1} start" data-index="${i}" data-end="0" type="number" min="1" max="${context.clip.frame_count}" value="${a}"></label><span>–</span><label>End <input aria-label="Interval ${i + 1} end" data-index="${i}" data-end="1" type="number" min="1" max="${context.clip.frame_count}" value="${b}"></label><button data-remove="${i}" aria-label="Remove interval ${i + 1}">×</button></div>`,
+    )
+    .join("");
+  $("#intervals")
+    .querySelectorAll("input")
+    .forEach(
+      (input) =>
+        (input.onchange = () => {
+          const i = +input.dataset.index,
+            end = +input.dataset.end,
+            next = [...intervals[i]],
+            value = Number(input.value);
+          next[end] = value;
+          if (
+            !Number.isInteger(value) ||
+            value < 1 ||
+            value > context.clip.frame_count ||
+            next[0] > next[1]
+          ) {
+            input.value = intervals[i][end];
+            $("#markStatus").textContent =
+              "Use whole frame numbers with start no later than end.";
+            return;
+          }
+          intervals[i] = next;
+          $("#markStatus").textContent = "";
+          refresh();
+        }),
     );
-  }
-  $("#answer").value = parts.join("; ");
-  $("#copy").disabled = !valid;
-  $("#selectionStatus").textContent =
-    mode === "interval"
-      ? `Start: ${start ?? "—"} · End: ${end ?? "—"}`
-      : selectionText(mode, start, end);
-  $("#start").disabled = $("#end").disabled = mode !== "interval";
-  $("#agreementNote").textContent = agreement
-    ? `Saved for window ${windowFrames(agreement.window).join("–")}. Choose again to replace.`
-    : context.after
-      ? "Choose for the currently displayed VERA window."
-      : "Your initial judgment: no AI is shown.";
+  $("#intervals")
+    .querySelectorAll("[data-remove]")
+    .forEach(
+      (b) =>
+        (b.onclick = () => {
+          intervals.splice(+b.dataset.remove, 1);
+          refresh();
+        }),
+    );
+  document
+    .querySelectorAll("[data-mode]")
+    .forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+  paintBands();
 }
-
-// One step on press; held presses repeat after a short delay. Stop on all exits.
+function paintBands() {
+  const ranges = [...intervals];
+  if (pending !== null)
+    ranges.push([
+      Math.min(pending, currentFrame),
+      Math.max(pending, currentFrame),
+    ]);
+  $("#humanBands").innerHTML = ranges
+    .map(
+      ([a, b]) =>
+        `<span style="left:${(100 * (a - 1)) / context.clip.frame_count}%;width:${(100 * (b - a + 1)) / context.clip.frame_count}%"></span>`,
+    )
+    .join("");
+}
 export function holdStep(button, step) {
   let timer;
   let held = false;
@@ -133,152 +176,97 @@ function movableDock(dock, handle) {
 
 export function setupInspection(options) {
   context = options;
-  const { video, after, seek, frame, clip } = options;
-  const togglePlay = () =>
+  const { video, frame, seek, clip } = options;
+  const toggle = () =>
     video.paused ? video.play().catch(() => {}) : video.pause();
-  video.onclick = togglePlay;
+  video.onclick = toggle;
   video.onkeydown = (event) => {
     if (event.key === " " || event.key === "Enter") {
       event.preventDefault();
-      togglePlay();
+      toggle();
     }
-    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+    if (["ArrowLeft", "ArrowRight"].includes(event.key)) {
       event.preventDefault();
       video.pause();
       seek(frame() + (event.key === "ArrowLeft" ? -1 : 1));
     }
   };
   let target = frame();
-  function step(delta) {
+  const step = (delta) => {
     video.pause();
     if (!video.seeking) target = frame();
     target = Math.max(1, Math.min(clip.frame_count, target + delta));
     seek(target);
-  }
+  };
   holdStep($("#previous"), () => step(-1));
   holdStep($("#next"), () => step(1));
-  $("#previous").title = "Previous frame · hold to step continuously";
-  $("#next").title = "Next frame · hold to step continuously";
-  const controls = $(".controls");
-  controls.insertAdjacentHTML(
-    "afterbegin",
-    '<button id="dragHandle" aria-label="Move playback controls" title="Drag sideways to move controls; arrow keys also work">⠿</button>',
-  );
-  const dockArea = document.createElement("div");
-  dockArea.className = "dockArea";
-  $(".timelineTop").after(dockArea);
-  dockArea.append(controls);
-  movableDock(controls, $("#dragHandle"));
-  $("#frame").insertAdjacentHTML(
-    "afterend",
-    '<span class="muted">Click the original video to play/pause · hold ±1 to step</span>',
-  );
-
-  $("#slider").insertAdjacentHTML(
-    "beforebegin",
-    after
-      ? '<div class="windowTrack"><span id="windowBand"></span></div><div id="windowLabel" class="muted"></div>'
-      : "",
-  );
-  $("#slider").insertAdjacentHTML(
-    "afterend",
-    '<div id="preview" hidden><canvas id="previewCanvas"></canvas><span id="previewLabel"></span><button id="closePreview" aria-label="Close frame preview">×</button></div>',
-  );
-  $("#slider").addEventListener("pointerdown", () => {
-    preview = true;
-    $("#preview").hidden = false;
-  });
-  $("#closePreview").onclick = () => {
-    preview = false;
-    $("#preview").hidden = true;
-  };
-  $(".timeline").insertAdjacentHTML(
-    "beforeend",
-    `
-    <section class="selection" aria-label="Your inspection notes">
-      <div class="selectionTools">
-        <label for="judgment">Your review</label>
-        <select id="judgment"><option value="interval">Mark anomaly interval</option><option value="none">No anomaly observed</option><option value="uncertain">Cannot determine</option></select>
-        <button id="start">Set start</button><button id="end">Set end</button>
-        <span id="selectionStatus" class="muted"></span>
-        ${after ? '<label for="agree">VERA judgment</label><select id="agree"><option value="">Choose…</option><option>Agree</option><option>Disagree</option><option>Cannot determine</option></select>' : ""}
-        <button id="reset" title="Clear your interval and agreement">Clear</button>
-      </div>
-      <div id="agreementNote" class="muted"></div>
-      <div class="answerRow"><label class="srOnly" for="answer">Copyable inspection summary</label><input id="answer" readonly><button id="copy">Copy for Form</button><span id="copyStatus" role="status"></span></div>
-    </section>`,
-  );
-  $("#judgment").onchange = summary;
-  $("#start").onclick = () => {
+  movableDock($(".controls"), $("#dragHandle"));
+  $("#mark").onclick = () => {
     video.pause();
-    start = frame();
-    summary();
+    if (video.seeking) {
+      $("#markStatus").textContent =
+        "Wait for the selected frame to appear, then mark it.";
+      return;
+    }
+    if (pending === null) {
+      pending = frame();
+      mode = "";
+    } else {
+      if (frame() < pending) {
+        $("#markStatus").textContent =
+          `Choose an end at or after frame ${pending}.`;
+        return;
+      }
+      intervals.push([pending, frame()]);
+      pending = null;
+    }
+    $("#markStatus").textContent = "";
+    refresh();
   };
-  $("#end").onclick = () => {
-    video.pause();
-    end = frame();
-    summary();
+  $("#cancelMark").onclick = () => {
+    pending = null;
+    refresh();
   };
-  $("#reset").onclick = () => {
-    start = end = agreement = null;
-    $("#judgment").value = "interval";
-    if (after) $("#agree").value = "";
-    summary();
+  document.querySelectorAll("[data-mode]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        mode = b.dataset.mode;
+        intervals = [];
+        pending = null;
+        refresh();
+      }),
+  );
+  $("#clear").onclick = () => {
+    intervals = [];
+    pending = null;
+    mode = "";
+    refresh();
   };
-  if (after)
-    $("#agree").onchange = (event) => {
-      agreement = event.target.value
-        ? { answer: event.target.value, window: { ...options.getWindow() } }
-        : null;
-      summary();
-    };
-  $("#copy").onclick = async () => {
+  $("#answer").onclick = async () => {
+    const answer = mode || rangeText(intervals);
     try {
-      await navigator.clipboard.writeText($("#answer").value);
-      $("#copyStatus").textContent = "Copied. Paste into the Form.";
-    } catch {
-      $("#answer").select();
+      await navigator.clipboard.writeText(answer);
       $("#copyStatus").textContent =
-        "Press ⌘C / Ctrl+C, then paste into the Form.";
+        "Copied. Paste into the frame-number question in your Form.";
+    } catch {
+      $("#copyStatus").textContent =
+        "Copy the displayed frame ranges manually.";
     }
   };
-  summary();
+  refresh();
 }
-
 export function updateInspection(frame, window) {
-  if (!context) return;
-  if (window) {
-    if (window.index !== lastWindow) {
-      $("#agree").value = "";
-      lastWindow = window.index;
-    }
-    const [first, last] = windowFrames(window, context.clip.fps);
-    const band = $("#windowBand");
-    band.style.left = `${(100 * (first - 1)) / context.clip.frame_count}%`;
-    band.style.width = `${(100 * (last - first + 1)) / context.clip.frame_count}%`;
-    band.classList.toggle("anomaly", window.label === 1);
-    $("#windowLabel").textContent =
-      `Displayed VERA window: frames ${first}–${last} · ${(window.end - window.start).toFixed(0)} s · output ${window.label}. ${window.label === 1 ? "Red = predicted anomaly" : "Blue = predicted no anomaly"}; not event boundaries.`;
+  currentFrame = frame;
+  if (pending !== null) {
+    paintBands();
+    $("#answer").textContent = rangeText([
+      ...intervals,
+      [Math.min(pending, currentFrame), Math.max(pending, currentFrame)],
+    ]);
   }
-  if (preview && !context.video.seeking) {
-    const canvas = $("#previewCanvas");
-    canvas.width = 128;
-    canvas.height = Math.round(
-      (128 * context.video.videoHeight) / context.video.videoWidth,
-    );
-    canvas
-      .getContext("2d")
-      .drawImage(context.video, 0, 0, canvas.width, canvas.height);
-    $("#previewLabel").textContent = `Original · frame ${frame}`;
-  }
+  $("#frameCursor").style.left =
+    `${(100 * (frame - 1)) / (context.clip.frame_count - 1)}%`;
 }
-
 export function inspectionNotes() {
-  return {
-    mode: $("#judgment").value,
-    start_frame: start,
-    end_frame: end,
-    agreement,
-    summary: $("#answer").value,
-  };
+  return { intervals: intervals.map((r) => [...r]), code: mode || null };
 }

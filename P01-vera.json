@@ -1,0 +1,478 @@
+[
+  {
+    "time": 5.466666666666667,
+    "start": 0.4666666666666667,
+    "end": 10.466666666666667,
+    "raw": "Answers to Prompt Questions: There are people in the video who are not in their typical positions or engaging in activities that are not consistent with their usual behavior. Specifically, one person is seen falling to the ground, which is not a typical behavior for someone walking through a corridor. There are no vehicles or objects in the video that are not in their typical positions or being used in a way that is not consistent with their usual function. There is visible damage or unusual movement in the video, as one person falls to the ground. There are no unusual sounds or noises in the video that suggest an anomaly. Based on the analysis above, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      15,
+      52,
+      90,
+      127,
+      165,
+      202,
+      240,
+      277
+    ]
+  },
+  {
+    "time": 6.0,
+    "start": 1.0,
+    "end": 11.0,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      31,
+      68,
+      106,
+      143,
+      181,
+      218,
+      256,
+      293
+    ]
+  },
+  {
+    "time": 6.533333333333333,
+    "start": 1.5333333333333334,
+    "end": 11.533333333333333,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      47,
+      84,
+      122,
+      159,
+      197,
+      234,
+      272,
+      309
+    ]
+  },
+  {
+    "time": 7.066666666666666,
+    "start": 2.066666666666667,
+    "end": 12.066666666666666,
+    "raw": "Answers to Prompt Questions: There are people in the video who are not in their typical positions or engaging in activities that are not consistent with their usual behavior. Specifically, one person is seen lying on the ground while others are standing around them. This behavior is not typical and suggests an anomaly.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      63,
+      100,
+      138,
+      175,
+      213,
+      250,
+      288,
+      325
+    ]
+  },
+  {
+    "time": 7.6,
+    "start": 2.6,
+    "end": 12.6,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground and others are gathered around them, which indicates an anomaly. There is visible damage or unusual movement in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      79,
+      116,
+      154,
+      191,
+      229,
+      266,
+      304,
+      341
+    ]
+  },
+  {
+    "time": 8.133333333333333,
+    "start": 3.1333333333333333,
+    "end": 13.133333333333333,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises in the video. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      95,
+      132,
+      170,
+      207,
+      245,
+      282,
+      320,
+      357
+    ]
+  },
+  {
+    "time": 8.666666666666666,
+    "start": 3.6666666666666665,
+    "end": 13.666666666666666,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      111,
+      148,
+      186,
+      223,
+      261,
+      298,
+      336,
+      373
+    ]
+  },
+  {
+    "time": 9.2,
+    "start": 4.2,
+    "end": 14.2,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground and another person appears to be interacting with them in a manner that is not consistent with typical behavior. There are no visible vehicles or objects in unusual positions. There is no visible damage or unusual movement. There are no unusual sounds or noises.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      127,
+      164,
+      202,
+      239,
+      277,
+      314,
+      352,
+      389
+    ]
+  },
+  {
+    "time": 9.733333333333333,
+    "start": 4.733333333333333,
+    "end": 14.733333333333333,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      143,
+      180,
+      218,
+      255,
+      293,
+      330,
+      368,
+      405
+    ]
+  },
+  {
+    "time": 10.266666666666667,
+    "start": 5.266666666666667,
+    "end": 15.266666666666667,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground and another person appears to be interacting with them in a way that is not consistent with typical behavior. There are no visible vehicles or objects in unusual positions. There is no visible damage or unusual movement. There are no unusual sounds or noises. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      159,
+      196,
+      234,
+      271,
+      309,
+      346,
+      384,
+      421
+    ]
+  },
+  {
+    "time": 10.8,
+    "start": 5.8,
+    "end": 15.8,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      175,
+      212,
+      250,
+      287,
+      325,
+      362,
+      400,
+      437
+    ]
+  },
+  {
+    "time": 11.333333333333334,
+    "start": 6.333333333333333,
+    "end": 16.333333333333332,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      191,
+      228,
+      266,
+      303,
+      341,
+      378,
+      416,
+      453
+    ]
+  },
+  {
+    "time": 11.866666666666667,
+    "start": 6.866666666666666,
+    "end": 16.866666666666667,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      207,
+      244,
+      282,
+      319,
+      357,
+      394,
+      432,
+      469
+    ]
+  },
+  {
+    "time": 12.4,
+    "start": 7.4,
+    "end": 17.4,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      223,
+      260,
+      298,
+      335,
+      373,
+      410,
+      448,
+      485
+    ]
+  },
+  {
+    "time": 12.933333333333334,
+    "start": 7.933333333333334,
+    "end": 17.933333333333334,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      239,
+      276,
+      314,
+      351,
+      389,
+      426,
+      464,
+      501
+    ]
+  },
+  {
+    "time": 13.466666666666667,
+    "start": 8.466666666666667,
+    "end": 18.466666666666665,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible in the video. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      255,
+      292,
+      330,
+      367,
+      405,
+      442,
+      480,
+      517
+    ]
+  },
+  {
+    "time": 14.0,
+    "start": 9.0,
+    "end": 19.0,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      271,
+      308,
+      346,
+      383,
+      421,
+      458,
+      496,
+      533
+    ]
+  },
+  {
+    "time": 14.533333333333333,
+    "start": 9.533333333333333,
+    "end": 19.533333333333335,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible in the video. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      287,
+      324,
+      362,
+      399,
+      437,
+      474,
+      512,
+      549
+    ]
+  },
+  {
+    "time": 15.066666666666666,
+    "start": 10.066666666666666,
+    "end": 20.066666666666666,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      303,
+      340,
+      378,
+      415,
+      453,
+      490,
+      528,
+      565
+    ]
+  },
+  {
+    "time": 15.6,
+    "start": 10.6,
+    "end": 20.6,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      319,
+      356,
+      394,
+      431,
+      469,
+      506,
+      544,
+      581
+    ]
+  },
+  {
+    "time": 16.133333333333333,
+    "start": 11.133333333333333,
+    "end": 21.133333333333333,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      335,
+      372,
+      410,
+      447,
+      485,
+      522,
+      560,
+      597
+    ]
+  },
+  {
+    "time": 16.666666666666668,
+    "start": 11.666666666666666,
+    "end": 21.666666666666668,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible in the video. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      351,
+      388,
+      426,
+      463,
+      501,
+      538,
+      576,
+      613
+    ]
+  },
+  {
+    "time": 17.2,
+    "start": 12.2,
+    "end": 22.2,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      367,
+      404,
+      442,
+      479,
+      517,
+      554,
+      592,
+      629
+    ]
+  },
+  {
+    "time": 17.733333333333334,
+    "start": 12.733333333333333,
+    "end": 22.733333333333334,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      383,
+      420,
+      458,
+      495,
+      533,
+      570,
+      608,
+      645
+    ]
+  },
+  {
+    "time": 18.266666666666666,
+    "start": 13.266666666666667,
+    "end": 23.266666666666666,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      399,
+      436,
+      474,
+      511,
+      549,
+      586,
+      624,
+      661
+    ]
+  },
+  {
+    "time": 18.8,
+    "start": 13.8,
+    "end": 23.8,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible in the video. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      415,
+      452,
+      490,
+      527,
+      565,
+      602,
+      640,
+      677
+    ]
+  },
+  {
+    "time": 19.333333333333332,
+    "start": 14.333333333333334,
+    "end": 24.333333333333332,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises in the video. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      431,
+      468,
+      506,
+      543,
+      581,
+      618,
+      656,
+      693
+    ]
+  },
+  {
+    "time": 19.866666666666667,
+    "start": 14.866666666666667,
+    "end": 24.866666666666667,
+    "raw": "Answers to Prompt Questions: There is a person lying on the ground in an unusual position, which is not consistent with their usual behavior. There are no vehicles or objects in unusual positions. There is visible damage as the person is lying on the ground. There are no unusual sounds or noises visible. Based on the analysis, there is an anomaly in the video.\nOutput: 1",
+    "label": 1,
+    "input_frames": [
+      447,
+      484,
+      522,
+      559,
+      597,
+      634,
+      672,
+      709
+    ]
+  }
+]

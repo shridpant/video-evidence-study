@@ -52,5 +52,15 @@
     "focus": 13.0,
     "sha256": "2b9d569033eb38cd64228962a4d034b1adad16cc3ae32a1c352615a5f1e34aae",
     "frame_count": 750
+  },
+  {
+    "id": "P01",
+    "duration": 25,
+    "fps": 30,
+    "condition": "text",
+    "focus": 5,
+    "sha256": "f3b53a5c40d50dc2e4350f6006cfa3d68700d8e355177a53bf76bf99a7b04f93",
+    "frame_count": 750,
+    "practice": true
   }
 ]
