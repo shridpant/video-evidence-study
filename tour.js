@@ -23,7 +23,7 @@ export function setupTour({ video, seek }) {
     {
       target: ".windowStrip",
       title: "4: Review a 10-second window",
-      text: "Move the upper slider to another window. Both pointers share the same video timeline. The green outline is the window being assessed. Red dots mark centers of flagged windows. Drag freely; arrow keys jump between windows. A window label is not an exact event boundary.",
+      text: "Move the upper slider to another window. Both pointers share the same video timeline. The outline shows the window being assessed. Red dots mark centers of flagged windows. Drag freely; arrow keys jump between windows. A window label is not an exact event boundary.",
       event: "window",
     },
     {
