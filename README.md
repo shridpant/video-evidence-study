@@ -6,6 +6,8 @@ Small static study viewer hosted on GitHub Pages. No framework, analytics, respo
 
 - `app.js`: loads the assigned clip/evidence, synchronizes views and navigates frames/windows.
 - `inspection.js`: temporary multi-interval annotations, endpoint editing, copy, held stepping and movable controls.
+- `timeline.js`: shared frame coordinates and window-step navigation.
+- `tour.js`: action-led spotlight walkthrough, loaded for separate practice only.
 - `style.css`: responsive white/warm RIT-accented presentation.
 - `C01.html`–`C06.html`: individual study entries. `P01.html`: separate practice.
 - `study.json`: clip metadata. MP4/JSON/image files: genuine footage and computed evidence.
@@ -16,9 +18,11 @@ Open `C01.html?phase=before` or `C01.html?phase=after`. Before pages do not fetc
 
 All clips contain 750 frames at 30 fps. Frame labels are inclusive, clip-relative and 1-based. The lower full-width filmstrip is a range input with step 1; thumbnails are sparse previews, while seeking addresses every video frame. Hold ±1 for repeated stepping. Click the original video or Play to toggle playback. Controls stay outside the footage.
 
-Start marking → move to an end frame → Finish interval. Repeat for separate intervals; edit endpoints or remove individual intervals. Red bands indicate human markings. The top red answer copies only ranges (`128–175; 240–290`) or NONE/UNSURE/SKIP. No VERA agreement is copied or explicitly asked. Draft marks stay in memory and disappear on reload/closing; copy before returning to the Form.
+Start on the left margin → move to an end frame → Finish on the right margin. Finish is disabled until Start is pressed. Repeat for separate intervals; edit endpoints or remove individual intervals. The margins do not toggle video playback. Red bands indicate human markings. The top red answer copies only ranges (`128–175; 240–290`) or NONE/UNSURE/SKIP. No subjective AI agreement is copied or asked. Draft marks stay in memory and disappear on reload/closing; copy before returning to the Form.
 
-The upper filmstrip selects actual VERA windows. Red borders indicate VERA label 1, not per-frame ground truth. Windows overlap. Follow frame selects the nearest window center; manual window selection pins that output until Follow frame is restored or the frame filmstrip is used. Exact raw VLM text is paginated without rewriting. The expandable input strip shows the exact eight source images used by VERA, resized only for preview.
+Both full-width tracks use the same 1–750 frame coordinates and always follow playback. The upper track snaps pointer/keyboard navigation to actual 10-second window centers; its thumb still follows the current frame during playback and frame stepping. Home/End reach clip boundaries. Red ticks mark positive window centers; the outline spans the selected window, not an exact anomaly interval. The same bell symbol identifies the AI pane and its track. Exact raw model text is retained in a fixed scroll box. Sampled evidence and the frame-score caveat are expandable. Clicking an input thumbnail seeks its frame and selects the corresponding nearest window; there is no hidden pinned-output mode.
+
+`P01.html?phase=after` starts a practice-only, eight-step spotlight guide. It advances through play, frame scrubbing, understanding the alert, window navigation, Start, Finish, and copying. It can be skipped, replayed or dismissed with Escape. Reduced-motion preferences disable transitions. Practice interactions are temporary and never sent or scored.
 
 Maps are genuine Grad-CAM++ outputs of a separate X3D-S fight/non-fight classifier, sampled 32 times per 10-second window; nearest-sample display does not make them independent per-frame VERA explanations. Amber shows relative importance, not confidence. Boxes are actual Grounding DINO object proposals, not verified anomaly locations. Existing errors are retained. These VERA outputs are the VLM stage, not the full final ImageBind-based scoring pipeline.
 
@@ -33,3 +37,9 @@ The research team can derive human–VERA correspondence after export by compari
 ## Local preview
 
 Run `python3 -m http.server 8765 --directory site` from the parent workspace, then open the relevant local clip URL. Check original/text, map, boxes, all-view and practice pages, both phases, all boundary frames, marking/editing/copy, slider steps and held stepping. Do not submit test responses or publish the Form without the investigator's instruction.
+
+## Design rationale
+
+The interface applies progressive disclosure and temporal context recommendations from Rastogi et al., _Too Much to Trust?_ (arXiv:2503.02065v2, sections 7–8). This is design rationale, not evidence that this interface improves trust or decision accuracy. Existing effort/usefulness questions remain distinct from correctness; the effort item is not NASA-TLX.
+
+The RIT footer is the unchanged official RGB asset from the RIT Brand Portal's `rit-only-orange-04302019.zip`. AI4Sec branding is retained. The bell is a simple local SVG identifying AI information.

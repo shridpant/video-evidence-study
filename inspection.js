@@ -29,9 +29,13 @@ function refresh() {
     pending !== null
       ? `Recording from frame ${pending} · move to the end, then finish`
       : "Click the red answer to copy into Google Forms";
-  $("#mark").textContent =
-    pending === null ? "+ Start marking" : "■ Finish interval";
-  $("#mark").classList.toggle("recording", pending !== null);
+  $("#mark").disabled = pending !== null;
+  $("#finish").disabled = pending === null;
+  $("#finish").classList.toggle("recording", pending !== null);
+  $("#selectionHint").textContent =
+    pending !== null
+      ? `Marking from ${pending} → choose an end frame`
+      : "Mark an interval, or choose:";
   $("#cancelMark").hidden = pending === null;
   $("#intervals").innerHTML = intervals
     .map(
@@ -74,9 +78,10 @@ function refresh() {
           refresh();
         }),
     );
-  document
-    .querySelectorAll("[data-mode]")
-    .forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+  document.querySelectorAll("[data-mode]").forEach((b) => {
+    b.classList.toggle("active", b.dataset.mode === mode);
+    b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
+  });
   paintBands();
 }
 function paintBands() {
@@ -205,23 +210,28 @@ export function setupInspection(options) {
     video.pause();
     if (video.seeking) {
       $("#markStatus").textContent =
-        "Wait for the selected frame to appear, then mark it.";
+        "Wait for the frame to appear, then start.";
       return;
     }
-    if (pending === null) {
-      pending = frame();
-      mode = "";
-    } else {
-      if (frame() < pending) {
-        $("#markStatus").textContent =
-          `Choose an end at or after frame ${pending}.`;
-        return;
-      }
-      intervals.push([pending, frame()]);
-      pending = null;
-    }
+    pending = frame();
+    mode = "";
     $("#markStatus").textContent = "";
     refresh();
+    document.dispatchEvent(new CustomEvent("inspection:start"));
+  };
+  $("#finish").onclick = () => {
+    video.pause();
+    if (video.seeking || pending === null) return;
+    if (frame() < pending) {
+      $("#markStatus").textContent =
+        `Choose an end at or after frame ${pending}.`;
+      return;
+    }
+    intervals.push([pending, frame()]);
+    pending = null;
+    $("#markStatus").textContent = "";
+    refresh();
+    document.dispatchEvent(new CustomEvent("inspection:finish"));
   };
   $("#cancelMark").onclick = () => {
     pending = null;
@@ -248,6 +258,7 @@ export function setupInspection(options) {
       await navigator.clipboard.writeText(answer);
       $("#copyStatus").textContent =
         "Copied. Paste into the frame-number question in your Form.";
+      document.dispatchEvent(new CustomEvent("inspection:copy"));
     } catch {
       $("#copyStatus").textContent =
         "Copy the displayed frame ranges manually.";

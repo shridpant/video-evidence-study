@@ -1,11 +1,8 @@
+/* Study inspector: layout, controls, evidence, and practice. */
 :root {
   font-family: Arial, Helvetica, sans-serif;
-  color: #302e2b;
-  background: #fffdf9;
   --orange: #c65300;
   --red: #a92228;
-  --line: #e4dcd2;
-  --soft: #fff4e8;
 }
 * {
   box-sizing: border-box;
@@ -46,7 +43,6 @@ button.active,
   background: var(--soft);
 }
 .shell {
-  max-width: 1600px;
   margin: auto;
   padding: 12px 24px;
 }
@@ -55,10 +51,6 @@ header {
   gap: 14px;
   align-items: center;
   padding-bottom: 10px;
-  border-bottom: 2px solid #f3b47d;
-}
-header strong {
-  font-size: 14px;
 }
 small {
   display: block;
@@ -79,7 +71,6 @@ small {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 12px 0;
 }
 .eyebrow {
   font-size: 12px;
@@ -113,7 +104,6 @@ small {
   right: 0;
   width: 340px;
   padding: 16px;
-  background: white;
   border: 1px solid var(--line);
   box-shadow: 0 6px 24px #47290c15;
   z-index: 5;
@@ -126,7 +116,6 @@ small {
   margin: 0 0 10px;
 }
 .intro h1 {
-  font-size: 18px;
   margin: 0;
 }
 .intro span {
@@ -135,7 +124,6 @@ small {
 }
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
   gap: 18px;
 }
 .mediaArea {
@@ -156,7 +144,6 @@ small {
 .panes {
   display: flex;
   gap: 10px;
-  align-items: start;
 }
 .pane {
   flex: 1;
@@ -178,8 +165,6 @@ small {
 .picture video,
 .picture canvas {
   display: block;
-  width: 100%;
-  max-height: 40vh;
   object-fit: contain;
 }
 .stamp {
@@ -201,25 +186,10 @@ small {
 .marking > small {
   margin: 5px 0;
 }
-.marking #mark {
-  font-weight: bold;
-  border-color: var(--red);
-  color: var(--red);
-  width: 100%;
-}
-.marking #mark.recording {
-  background: var(--red);
-  color: white;
-}
 .choices {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
   margin-top: 7px;
-}
-.choices button {
-  font-size: 11px;
-  padding: 5px 6px;
 }
 .interval {
   display: flex;
@@ -228,12 +198,8 @@ small {
   margin: 6px 0;
   color: var(--red);
 }
-.interval label {
-  font-size: 10px;
-}
 .interval input {
   display: block;
-  width: 77px;
   border: 1px solid #d7b6b6;
   border-radius: 4px;
   padding: 3px;
@@ -243,7 +209,6 @@ small {
   padding: 5px 8px;
 }
 #intervals {
-  max-height: 90px;
   overflow: auto;
 }
 #markStatus {
@@ -257,7 +222,6 @@ small {
 }
 .verdict {
   font-weight: bold;
-  font-size: 13px;
   color: #5e584e;
 }
 .verdict.anomaly {
@@ -267,25 +231,6 @@ small {
   font-size: 11px;
   color: #71675d;
   margin-top: 4px;
-}
-.raw {
-  font:
-    12px/1.45 Arial,
-    Helvetica,
-    sans-serif;
-  white-space: pre-wrap;
-  margin: 8px 0;
-  min-height: 75px;
-}
-.textPages {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 10px;
-  color: #74685d;
-}
-.textPages button {
-  padding: 3px 8px;
 }
 .aiOutput details {
   margin-top: 8px;
@@ -312,9 +257,6 @@ small {
 .firstView {
   line-height: 1.6;
   color: #73665b;
-}
-.timeline {
-  margin-top: 12px;
 }
 .timelineTop {
   display: flex;
@@ -387,11 +329,7 @@ small {
   height: 58px;
   background-color: #eee8de;
 }
-.windowStrip {
-  height: 42px;
-}
 .windowTiles {
-  display: flex;
   width: 100%;
   height: 100%;
   gap: 2px;
@@ -399,15 +337,11 @@ small {
 .windowTile {
   flex: 1;
   min-width: 0;
-  border: 2px solid transparent;
-  opacity: 0.7;
 }
 .windowTile.aiAnomaly {
   border-color: var(--red);
 }
 .windowTile.selected {
-  opacity: 1;
-  outline: 2px solid #f6a75c;
   outline-offset: -4px;
 }
 .filmstrip input,
@@ -546,4 +480,427 @@ small {
   #answer {
     font-size: 20px;
   }
+}
+:root {
+  background: #f5f1e8;
+  color: #29372f;
+  --line: #ded9ce;
+  --soft: #faf4e9;
+}
+header {
+  border-bottom: 1px solid #d8c5ab;
+}
+header strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 400;
+}
+header small {
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+.intro h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: 21px;
+}
+.intro {
+  margin-bottom: 12px;
+}
+.shell {
+  max-width: 1600px;
+}
+.workspace {
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+}
+.before .workspace {
+  grid-template-columns: minmax(0, 1fr) 230px;
+}
+.aside {
+  border: 0;
+  padding: 0;
+}
+.aiOutput {
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #faf8f2;
+  height: 365px;
+  overflow: auto;
+}
+.aiOutput h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+.alertIcon {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  flex: none;
+}
+.raw {
+  height: 180px;
+  min-height: 180px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: 10px;
+  border: 1px solid #e5dfd4;
+  border-radius: 6px;
+  background: #fffdf7;
+  font:
+    12px/1.55 Arial,
+    Helvetica,
+    sans-serif;
+  white-space: pre-wrap;
+  margin: 10px 0;
+}
+.sourceDetails p {
+  font-size: 11px;
+  line-height: 1.55;
+}
+.verdict {
+  font-size: 13px;
+}
+.sourceDetails {
+  border-top: 1px solid var(--line);
+  padding-top: 7px;
+}
+.firstView {
+  padding: 15px;
+  background: #faf8f2;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.firstView h2 {
+  font-size: 14px;
+  color: #384438;
+}
+.reviewStage {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  gap: 8px;
+}
+.markRail {
+  align-self: stretch;
+  border: 1px solid #dfd2c3;
+  background: #f0e7db;
+  color: #8e4c25;
+  padding: 5px 2px;
+  font-size: 10px;
+  line-height: 1.5;
+  transition: background 0.15s;
+}
+.markRail > span {
+  display: block;
+  font:
+    30px Georgia,
+    serif;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.markRail:disabled {
+  color: #b1aaa0;
+  background: #efebe3;
+  border-color: #e8e2d8;
+  opacity: 1;
+}
+.markRail.recording {
+  background: #f9e3dc;
+  border-color: #b33d35;
+  color: #a92228;
+}
+.markRail:hover:not(:disabled) {
+  background: #f3dcc5;
+}
+.annotationBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 0 0;
+}
+.annotationBar #selectionHint {
+  font-size: 11px;
+  color: #72675c;
+}
+.choices {
+  margin: 0;
+  gap: 6px;
+}
+.choices button {
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #faf8f3;
+  font-size: 11px;
+}
+.choices button::before {
+  content: "";
+  display: inline-block;
+  border: 1px solid #ab9c8c;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.choices button.active {
+  border-color: #9d6738;
+  background: #f1e3d0;
+}
+.choices button.active::before {
+  background: #99623b;
+  border-color: #99623b;
+}
+.quiet {
+  font-size: 11px;
+  color: #786b5b;
+  border-color: transparent;
+  background: transparent;
+  margin-left: auto;
+}
+#intervals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 72px;
+}
+.interval {
+  background: #fbece5;
+  border-radius: 6px;
+  padding: 4px 7px;
+}
+.interval input {
+  width: 65px;
+  background: #fffaf6;
+}
+.interval label {
+  font-size: 9px;
+}
+.timeline {
+  margin-top: 10px;
+}
+.trackLabel > label:first-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.trackLabel .alertIcon {
+  width: 16px;
+  height: 16px;
+}
+.windowStrip {
+  background-size: 100% 100%;
+  height: 42px;
+  overflow: visible;
+  border-radius: 6px;
+}
+.windowStrip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #f5f1e8aa;
+  border-radius: 6px;
+}
+.windowTiles {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+}
+.windowTile {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  transform: translateX(-50%);
+  opacity: 0.5;
+  border: 0;
+  background: #8e8b7c;
+}
+.windowTile.aiAnomaly {
+  background: #ae3735;
+  border: 0;
+}
+.windowTile.selected {
+  opacity: 1;
+  outline: 0;
+  background: #312e27;
+  width: 4px;
+}
+#activeWindow {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  border: 2px solid #8d6c3b;
+  background: #e9c38122;
+  border-radius: 5px;
+  pointer-events: none;
+}
+#activeWindow.anomaly {
+  border-color: #ad3434;
+  background: #b33d351a;
+}
+#alertPointer {
+  position: absolute;
+  top: -9px;
+  color: #815a32;
+  font-size: 11px;
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+}
+.windowStrip input,
+.filmstrip input {
+  border-radius: 6px;
+}
+.windowStrip input::-webkit-slider-thumb,
+.filmstrip input::-webkit-slider-thumb {
+  width: 12px;
+}
+.filmstrip {
+  height: 54px;
+}
+.timeTrack {
+  margin-top: 8px;
+}
+footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 8px;
+}
+.ritLogo {
+  width: 55px;
+  height: auto;
+}
+.tourSpotlight {
+  position: fixed;
+  pointer-events: none;
+  border: 2px solid #da9a55;
+  border-radius: 9px;
+  box-shadow: 0 0 0 9999px #20261f88;
+  z-index: 2000;
+  transition:
+    top 0.22s ease,
+    left 0.22s ease,
+    width 0.22s ease,
+    height 0.22s ease;
+}
+.tourCard {
+  position: fixed;
+  z-index: 2001;
+  padding: 18px;
+  background: #fffaf0;
+  color: #29372f;
+  border: 1px solid #d9bd98;
+  border-radius: 12px;
+  box-shadow: 0 10px 36px #18251d30;
+}
+.tourCard h2 {
+  font:
+    21px/1.2 Georgia,
+    serif;
+  margin: 10px 0;
+}
+.tourCard p {
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 10px 0 16px;
+}
+.tourCard > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tourCard button {
+  font-size: 12px;
+}
+.tourPrompt {
+  font-size: 11px;
+  color: #88562d;
+}
+.tourCard small {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+.panes {
+  align-items: start;
+}
+.picture video,
+.picture canvas {
+  max-height: 36vh;
+}
+.answerBar {
+  padding: 10px 0;
+}
+.help p {
+  background: #fffaf1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tourSpotlight,
+  .markRail {
+    transition: none;
+  }
+}
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+  .before .workspace {
+    grid-template-columns: minmax(0, 1fr) 190px;
+  }
+  .reviewStage {
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    gap: 4px;
+  }
+  .raw {
+    font-size: 11px;
+  }
+  .aiOutput {
+    padding: 10px;
+  }
+  .annotationBar {
+    gap: 6px;
+  }
+}
+@media (max-width: 650px) {
+  .workspace,
+  .before .workspace {
+    grid-template-columns: 1fr;
+  }
+  .aiOutput {
+    height: 300px;
+  }
+  .raw {
+    height: 130px;
+    min-height: 130px;
+  }
+  .reviewStage {
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+  }
+  .annotationBar #selectionHint {
+    flex-basis: 100%;
+  }
+  .choices button {
+    padding: 6px 8px;
+  }
+  header strong {
+    font-size: 17px;
+  }
+  .ritLogo {
+    width: 45px;
+  }
+}
+.picture video,
+.picture canvas {
+  width: auto;
+  max-width: 100%;
+  height: auto;
 }
