@@ -580,7 +580,7 @@ header small {
 }
 .firstView h2 {
   font-size: 14px;
-  color: #384438;
+  color: var(--ink);
 }
 .reviewStage {
   display: grid;
