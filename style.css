@@ -1035,3 +1035,51 @@ button:not(.markRail):not(#answer):not(.quiet) {
 [data-theme="dark"] .help summary,
 [data-theme="dark"] #time,
 [data-theme="dark"] #reset { color: var(--muted-ink); }
+
+/* Independent editorial palette: neutral surfaces, restrained color accents. */
+:root {
+  background: #fff;
+  color: #111;
+  --ink: #111;
+  --muted-ink: #555;
+  --surface: #fff;
+  --button: #fff;
+  --line: #d2d2d2;
+  --soft: #fff;
+}
+:root[data-theme="dark"] {
+  background: #000;
+  color: #f5f5f5;
+  --ink: #f5f5f5;
+  --muted-ink: #bcbcbc;
+  --surface: #000;
+  --button: #000;
+  --line: #555;
+  --soft: #000;
+}
+body, .shell { background: transparent; }
+header strong, .intro h1 { color: var(--ink); }
+header { border-color: var(--line); }
+.aiOutput, .raw, .firstView, .help, .controls, .tourCard,
+.choices button, .interval, .samples button, .markRail,
+input:not([type="range"]), #return {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+  box-shadow: none;
+}
+.picture, [data-theme="dark"] .picture { background: var(--surface); }
+.eyebrow, .caption, .muted, .trackLabel span, .intro span,
+#copyStatus, #selectionHint, #time, .help summary, .quiet {
+  color: var(--muted-ink);
+}
+button:not(#answer) { border-color: var(--line); }
+button:hover:not(:disabled):not(#answer) { border-color: var(--ink); }
+button.primary, .tabs button.active, .choices button.active {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.markRail.recording, .interval { border-color: var(--red); }
+.interval label { color: var(--red); }
+.windowStrip::before { background: #ffffff66; }
+[data-theme="dark"] .windowStrip::before { background: #00000066; }

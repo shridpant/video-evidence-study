@@ -8,13 +8,20 @@ let context,
 export function windowFrames(w, fps = 30) {
   return [Math.round(w.start * fps) + 1, Math.round(w.end * fps)];
 }
+export function mergeRanges(ranges) {
+  const merged = [];
+  for (const [start, end] of [...ranges].sort((a, b) => a[0] - b[0])) {
+    const last = merged.at(-1);
+    if (last && start <= last[1]) last[1] = Math.max(last[1], end);
+    else merged.push([start, end]);
+  }
+  return merged;
+}
 export function rangeText(ranges) {
-  return [...ranges]
-    .sort((a, b) => a[0] - b[0])
-    .map(([a, b]) => `${a}-${b}`)
-    .join("; ");
+  return mergeRanges(ranges).map(([a, b]) => `${a}-${b}`).join("; ");
 }
 function refresh() {
+  intervals = mergeRanges(intervals);
   const displayRanges =
     pending === null
       ? intervals
@@ -91,7 +98,7 @@ function paintBands() {
       Math.min(pending, currentFrame),
       Math.max(pending, currentFrame),
     ]);
-  $("#humanBands").innerHTML = ranges
+  $("#humanBands").innerHTML = mergeRanges(ranges)
     .map(
       ([a, b]) =>
         `<span style="left:${(100 * (a - 1)) / context.clip.frame_count}%;width:${(100 * (b - a + 1)) / context.clip.frame_count}%"></span>`,
