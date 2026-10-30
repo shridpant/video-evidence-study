@@ -47,3 +47,7 @@ The RIT footer is the unchanged official RGB asset from the RIT Brand Portal's `
 Display update: light background by default; the top theme icon toggles dark mode and stores only that preference locally. All footage panes toggle synchronized playback on click or keyboard. Alert heading appears only for label 1; full model text is unchanged. Guide links open separate practice tabs. Form-return control appears only for fresh tabs referred from Google Docs; direct visits instruct switching to the existing form tab. Authored UI and copied ranges use ASCII hyphens.
 
 Overlapping human intervals are automatically merged on completion or endpoint edits; genuine gaps remain separate. The top label is Your marked frames. Light surfaces are pure white and dark surfaces pure black, with neutral text and borders. The unpublished Form requires non-comment answers; rating 0 means Skip and must be treated as missing, never as a score. Frame answers use inclusive 1-750 indices and NONE / UNSURE / SKIP.
+
+## Focus view
+
+The Focus view button enlarges the existing footage (including side-by-side evidence) within the browser. Marking, copied answers and timelines remain available; AI text returns when leaving focus. Exit with Escape or Exit focus. No media is reloaded and annotations remain intact. The small `focus.js` module owns this display-only behavior.

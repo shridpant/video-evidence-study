@@ -1083,3 +1083,34 @@ button.primary, .tabs button.active, .choices button.active {
 .interval label { color: var(--red); }
 .windowStrip::before { background: #ffffff66; }
 [data-theme="dark"] .windowStrip::before { background: #00000066; }
+
+/* Center the title independently of the logo and right-hand controls. */
+header { display: grid; grid-template-columns: 1fr auto 1fr; }
+.studyTitle { text-align: center; }
+.headerActions { justify-self: end; }
+.toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#focus { width: 128px; flex: 0 0 128px; }
+.focusView {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: auto;
+  background: var(--surface);
+  padding: 16px 24px;
+}
+.focusView header, .focusView .intro, .focusView footer,
+.focusView .aside, .focusView .answerBar .help { display: none; }
+.focusView .workspace { grid-template-columns: minmax(0, 1fr); }
+.focusView .picture video, .focusView .picture canvas {
+  max-height: 50vh;
+  height: 50vh;
+  width: 100%;
+  object-fit: contain;
+}
+@media (max-width: 650px) {
+  header { grid-template-columns: 45px minmax(0, 1fr) 45px; }
+  header .formReminder { display: none; }
+  header .studyTitle strong { font-size: 20px; }
+  .focusView { padding: 10px; }
+  .focusView .picture video, .focusView .picture canvas { height: 48vh; }
+}
