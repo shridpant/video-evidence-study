@@ -31,6 +31,37 @@ let c,
   mapPixels,
   lastMapFrame,
   lastTextWindow = -1;
+// The stored map values use a fixed 0–170 encoding of the normalized CAM.
+const mapScale = 170;
+const mapSize = 112;
+const heatStops = [[107, 59, 179], [213, 66, 155], [252, 136, 53], [255, 244, 146]];
+const heatColors = Array.from({ length: mapScale + 1 }, (_, value) => {
+  const position = value * (heatStops.length - 1) / mapScale;
+  const stop = Math.min(Math.floor(position), heatStops.length - 2);
+  const mix = position - stop;
+  const rgb = heatStops[stop].map((channel, i) =>
+    Math.round(channel + mix * (heatStops[stop + 1][i] - channel)));
+  return [...rgb, Math.round(235 * Math.sqrt(value / mapScale))];
+});
+const heatAxis = Array.from({ length: mapSize }, (_, pixel) => {
+  const position = Math.max(0, Math.min(6, (pixel + 0.5) * 7 / mapSize - 0.5));
+  const low = Math.floor(position);
+  return [low, Math.min(low + 1, 6), position - low];
+});
+
+function mapLegend() {
+  const colors = [0, 34, 68, 102, 136, 170].map((value) => {
+    const [r, g, b, opacity] = heatColors[value];
+    const alpha = opacity / 255;
+    const rgb = [r, g, b].map((channel) => Math.round(75 * (1 - alpha) + channel * alpha));
+    return `rgb(${rgb.join(",")})`;
+  });
+  return `<div class="caption" style="display:flex;align-items:center;gap:.45em;margin:.35em 0">
+    <span>Less influence</span><span aria-hidden="true" style="width:5em;height:.7em;
+    border:1px solid #777;border-radius:.2em;background:linear-gradient(90deg,${colors.join(",")})"></span>
+    <span>More influence</span></div>`;
+}
+
 const after = q.get("phase") === "after";
 const fromForm =
   document.referrer.startsWith("https://docs.google.com/") &&
@@ -44,7 +75,7 @@ function directory() {
   app.innerHTML = `<main class="directory"><img class="labLogo" src="ai4sec.png" alt="AI4Sec lab"><h1>Camera review</h1><p>Open your assigned clip using the link in the Google Form.</p><p>Keep the Form tab open to record your answers.</p></main>`;
 }
 function pane(id, title, caption) {
-  return `<section class="pane ${id === "original" ? "activePane" : ""}" id="${id}Pane"><h2>${title}</h2><div class="picture">${id === "original" ? `<video id="video" src="${c.id}.mp4" playsinline muted preload="auto" tabindex="0" role="button" aria-label="Play or pause original video"></video>` : `<canvas id="${id}Canvas" tabindex="0" role="button" aria-label="Play or pause ${title.toLowerCase()}"></canvas>`}</div><span class="stamp">Frame 001 / 750</span><div class="caption" id="${id}Caption">${caption}</div></section>`;
+  return `<section class="pane ${id === "original" ? "activePane" : ""}" id="${id}Pane"><h2>${title}</h2><div class="picture">${id === "original" ? `<video id="video" src="${c.id}.mp4" playsinline muted preload="auto" tabindex="0" role="button" aria-label="Play or pause original video"></video>` : `<canvas id="${id}Canvas" tabindex="0" role="button" aria-label="Play or pause ${title.toLowerCase()}"></canvas>`}</div><span class="stamp">Frame 001 / 750</span><div class="caption" id="${id}Caption">${caption}</div>${id === "map" ? mapLegend() : ""}</section>`;
 }
 function render() {
   const number = Number(c.id.slice(1));
@@ -190,7 +221,7 @@ function tick() {
     playingRAF = requestAnimationFrame(tick);
   }
 }
-function canvas(id) {
+function canvas(id, filter = "none") {
   const cv = $(id);
   if (!cv || !video.videoWidth) return null;
   if (cv.width !== video.videoWidth || cv.height !== video.videoHeight) {
@@ -198,7 +229,9 @@ function canvas(id) {
     cv.height = video.videoHeight;
   }
   const ctx = cv.getContext("2d");
+  ctx.filter = filter;
   ctx.drawImage(video, 0, 0);
+  ctx.filter = "none";
   return ctx;
 }
 function setView(view) {
@@ -273,14 +306,26 @@ function draw() {
       );
   }
   if (maps) {
-    const ctx = canvas("#mapCanvas");
+    const ctx = canvas("#mapCanvas", "grayscale(1) brightness(0.65)");
     if (ctx) {
       if (lastMapFrame !== n) {
         const tileCtx = mapTile.getContext("2d");
-        const image = tileCtx.createImageData(7, 7);
+        const image = tileCtx.createImageData(mapSize, mapSize);
         const offset = (n - 1) * 49;
-        for (let i = 0; i < 49; i++) {
-          image.data.set([230, 159, 49, mapPixels.charCodeAt(offset + i)], i * 4);
+        // Interpolate attribution values before applying the colors.
+        for (let y = 0; y < mapSize; y++) {
+          const [y0, y1, dy] = heatAxis[y];
+          const topRow = offset + y0 * 7;
+          const bottomRow = offset + y1 * 7;
+          for (let x = 0; x < mapSize; x++) {
+            const [x0, x1, dx] = heatAxis[x];
+            const top = mapPixels.charCodeAt(topRow + x0) * (1 - dx) +
+              mapPixels.charCodeAt(topRow + x1) * dx;
+            const bottom = mapPixels.charCodeAt(bottomRow + x0) * (1 - dx) +
+              mapPixels.charCodeAt(bottomRow + x1) * dx;
+            const value = Math.round(top * (1 - dy) + bottom * dy);
+            image.data.set(heatColors[value], (y * mapSize + x) * 4);
+          }
         }
         tileCtx.putImageData(image, 0, 0);
         lastMapFrame = n;
@@ -289,7 +334,7 @@ function draw() {
     }
     const target = maps.fight[n - 1] === "1" ? "Fight" : "No fight";
     $("#mapCaption").textContent =
-      `X3D-S: ${target}. Amber shows relative influence on this prediction in frame ${n}.`;
+      `X3D-S: ${target}. Color shows relative influence on this prediction in frame ${n}.`;
   }
   if (boxes) {
     const b = boxes.frames[n - 1],
@@ -337,7 +382,7 @@ function draw() {
           throw Error("Importance map does not match " + c.id);
         }
         mapTile = document.createElement("canvas");
-        mapTile.width = mapTile.height = 7;
+        mapTile.width = mapTile.height = mapSize;
       }
       if (["boxes", "all"].includes(c.condition))
         boxes = await json(`${c.id}-boxes.json`);
