@@ -22,13 +22,14 @@ let c,
   records,
   maps,
   boxes,
-  atlas,
   video,
   playingRAF,
   selectedWindow = 0,
   evidenceWindow = null,
   layout = q.get("layout") || "compare",
-  cache = new Map(),
+  mapTile,
+  mapPixels,
+  lastMapFrame,
   lastTextWindow = -1;
 const after = q.get("phase") === "after";
 const fromForm =
@@ -38,11 +39,6 @@ async function json(path) {
   const r = await fetch(path);
   if (!r.ok) throw Error("Could not load " + path);
   return r.json();
-}
-function nearest(xs, t, key = "time") {
-  return xs.reduce((a, b) =>
-    Math.abs(b[key] - t) < Math.abs(a[key] - t) ? b : a,
-  );
 }
 function directory() {
   app.innerHTML = `<main class="directory"><img class="labLogo" src="ai4sec.png" alt="AI4Sec lab"><h1>Camera review</h1><p>Open your assigned clip using the link in the Google Form.</p><p>Keep the Form tab open to record your answers.</p></main>`;
@@ -60,7 +56,7 @@ function render() {
     <section class="answerBar"><div><span class="eyebrow">Your marked frames</span><button id="answer" disabled></button><small id="copyStatus" role="status"></small></div><details class="help"><summary title="${esc(definition)}">What counts as an anomaly?</summary><p>${definition}</p></details></section>
     <div class="intro"><h1>${title}</h1><span>${c.practice ? "Try marking, editing and copying a range. Practice is not scored." : "Review the scene. Mark any anomalous intervals, then return to your Form."}</span></div>
     <main class="workspace"><section class="mediaArea"><div class="toolbar"><button id="focus" aria-pressed="false" title="Enlarge the video and keep frame controls available">⛶ Focus view</button>${after && (maps || boxes) ? `<div class="tabs">${["original", ...(maps ? ["map"] : []), ...(boxes ? ["boxes"] : [])].map((k) => `<button data-view="${k}">${{ original: "Original", map: "Importance map", boxes: "Boxes" }[k]}</button>`).join("")}<button data-view="compare" class="active">Side by side</button></div>` : ""}</div>
-    <div class="reviewStage"><button id="mark" class="markRail" aria-label="Start marking"><span aria-hidden="true">[</span>Start<br>mark</button><div class="panes">${pane("original", "Original footage", "Click video to play / pause")}${maps ? pane("map", "Estimated importance map", "") : ""}${boxes ? pane("boxes", "Object boxes", "") : ""}</div><button id="finish" class="markRail" aria-label="Finish interval" disabled><span aria-hidden="true">]</span>Finish<br>mark</button></div>
+    <div class="reviewStage"><button id="mark" class="markRail" aria-label="Start marking"><span aria-hidden="true">[</span>Start<br>mark</button><div class="panes">${pane("original", "Original footage", "Click video to play / pause")}${maps ? pane("map", "Importance map (Grad-CAM++)", "") : ""}${boxes ? pane("boxes", "Object boxes", "") : ""}</div><button id="finish" class="markRail" aria-label="Finish interval" disabled><span aria-hidden="true">]</span>Finish<br>mark</button></div>
     <section class="marking"><div class="annotationBar"><span id="selectionHint">Mark an interval, or choose:</span><div class="choices" role="group" aria-label="Assessment without a frame interval"><button data-mode="NONE" aria-pressed="false">No anomaly</button><button data-mode="UNSURE" aria-pressed="false">Cannot determine</button><button data-mode="SKIP" aria-pressed="false">Skip clip</button></div><button id="cancelMark" hidden>Cancel mark</button><button id="clear" class="quiet">Reset</button></div><div id="intervals"></div><span id="markStatus" role="status"></span></section></section>
     <aside class="aside">${after ? `<section class="aiOutput" aria-label="AI explanation"><h2>AI explanation</h2><div id="alertStatus"><div id="verdict" class="verdict anomaly">Output: 1</div><small>Anomaly flagged</small></div><div id="windowLabel" class="muted"></div><pre id="raw" class="raw" tabindex="0" aria-label="Exact AI explanation"></pre><details class="sourceDetails"><summary>Evidence used for this output (8 frames)</summary><div class="samples" id="samples"></div></details><details class="sourceDetails"><summary>How to read this output</summary><p>The AI assesses overlapping 10-second windows, using eight sampled frames from each. A 1 flags the whole window; it does not mean every frame is anomalous. A 0 does not rule out a missed event.</p><p>The full research system can refine window scores into frame-level scores through postprocessing. That postprocessing is not shown here: this pane displays the original window judgment and exact explanation. The selected window follows the nearest window center during playback or slider navigation. Clicking an evidence frame keeps its alert selected. Window boundaries come from the saved model output and may not begin at the clip start.</p></details></section>` : '<div class="firstView"><h2>Your first assessment</h2><p>Review the visible activity. AI evidence appears at the next stage of the Form.</p></div>'}</aside></main>
     <section class="timeline"><div class="timelineTop"><strong id="frame">Frame 1 / 750</strong><div class="dockArea"><div class="controls"><button id="dragHandle" aria-label="Move playback controls">⠿</button><button id="play" class="primary">Play</button><button id="previous" title="Hold to step continuously">-1 frame</button><button id="next" title="Hold to step continuously">+1 frame</button><label for="jump">Frame</label><input id="jump" type="number" min="1" max="750" value="1"><button id="go">Go</button></div></div></div>
@@ -277,42 +273,23 @@ function draw() {
       );
   }
   if (maps) {
-    const mw = nearest(maps.windows, t, "center"),
-      sample = nearest(mw.samples, t),
-      ctx = canvas("#mapCanvas");
+    const ctx = canvas("#mapCanvas");
     if (ctx) {
-      let im = cache.get(sample.tile);
-      if (!im) {
-        im = document.createElement("canvas");
-        im.width = 112;
-        im.height = 112;
-        const ic = im.getContext("2d");
-        ic.drawImage(
-          atlas,
-          (sample.tile % 16) * 112,
-          Math.floor(sample.tile / 16) * 112,
-          112,
-          112,
-          0,
-          0,
-          112,
-          112,
-        );
-        const px = ic.getImageData(0, 0, 112, 112);
-        for (let i = 0; i < px.data.length; i += 4) {
-          const v = px.data[i] / 255;
-          px.data[i] = 230;
-          px.data[i + 1] = 159;
-          px.data[i + 2] = 49;
-          px.data[i + 3] = Math.round(v * 170);
+      if (lastMapFrame !== n) {
+        const tileCtx = mapTile.getContext("2d");
+        const image = tileCtx.createImageData(7, 7);
+        const offset = (n - 1) * 49;
+        for (let i = 0; i < 49; i++) {
+          image.data.set([230, 159, 49, mapPixels.charCodeAt(offset + i)], i * 4);
         }
-        ic.putImageData(px, 0, 0);
-        cache.set(sample.tile, im);
+        tileCtx.putImageData(image, 0, 0);
+        lastMapFrame = n;
       }
-      ctx.drawImage(im, 0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.drawImage(mapTile, 0, 0, ctx.canvas.width, ctx.canvas.height);
     }
+    const target = maps.fight[n - 1] === "1" ? "Fight" : "No fight";
     $("#mapCaption").textContent =
-      `Separate classifier - ${mw.predicted_class} - map sampled at frame ${sample.frame + 1}`;
+      `X3D-S: ${target}. Amber shows relative influence on this prediction in frame ${n}.`;
   }
   if (boxes) {
     const b = boxes.frames[n - 1],
@@ -352,10 +329,15 @@ function draw() {
     if (after) {
       records = await json(`${c.id}-vera.json`);
       if (["map", "all"].includes(c.condition)) {
-        maps = await json(`${c.id}-maps.json`);
-        atlas = new Image();
-        atlas.src = `${c.id}-maps.png`;
-        await atlas.decode();
+        maps = await json(`${c.id}-gradcampp-v1.json`);
+        mapPixels = atob(maps.alpha);
+        if (maps.clipSha256 !== c.sha256 ||
+            mapPixels.length !== c.frame_count * 49 ||
+            !/^[01]+$/.test(maps.fight) || maps.fight.length !== c.frame_count) {
+          throw Error("Importance map does not match " + c.id);
+        }
+        mapTile = document.createElement("canvas");
+        mapTile.width = mapTile.height = 7;
       }
       if (["boxes", "all"].includes(c.condition))
         boxes = await json(`${c.id}-boxes.json`);
